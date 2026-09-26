@@ -1,0 +1,191 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "item_muida2ke_3rgq91",
+      "subject": "教育学",
+      "chapter": "第一章 教育与教育学",
+      "title": "教育的概念",
+      "question": "教育的本质是什么？",
+      "answer": "教育是有目的地培养人的社会活动，是传承社会文化、传递生产经验和社会生活经验的基本途径。",
+      "importance": "高",
+      "learnedAt": "2026-09-26",
+      "stageIndex": 1,
+      "nextReviewAt": "2026-09-28",
+      "mastered": false,
+      "history": [
+        {
+          "reviewedAt": "2026-09-25",
+          "rating": "模糊",
+          "prevStage": 0,
+          "nextStage": 0
+        },
+        {
+          "reviewedAt": "2026-09-26",
+          "rating": "记得",
+          "prevStage": 0,
+          "nextStage": 1
+        }
+      ]
+    },
+    {
+      "id": "item_muida2ke_v2jmvo",
+      "subject": "英语",
+      "chapter": "真题阅读 2019 Text 2",
+      "title": "长难句：并列结构",
+      "question": "这个句子的主干是什么？",
+      "answer": "The researchers argue that ... 主干是 The researchers argue，that 引导宾语从句。",
+      "importance": "中",
+      "learnedAt": "2026-09-26",
+      "stageIndex": 0,
+      "nextReviewAt": "2026-09-25",
+      "mastered": false,
+      "history": []
+    },
+    {
+      "id": "item_muida2ke_bg2c0q",
+      "subject": "政治",
+      "chapter": "马原 第二章",
+      "title": "矛盾的普遍性与特殊性",
+      "question": "矛盾普遍性和特殊性的关系？",
+      "answer": "普遍性寓于特殊性之中，特殊性包含普遍性，二者在一定条件下相互转化。",
+      "importance": "高",
+      "learnedAt": "2026-09-25",
+      "stageIndex": 0,
+      "nextReviewAt": "2026-09-26",
+      "mastered": false,
+      "history": []
+    }
+  ],
+  "memos": [
+    {
+      "id": "memo_muida2ke_t8uas9",
+      "content": "去打印店取资料",
+      "note": "别忘了带U盘",
+      "type": "生活杂事",
+      "priority": "中",
+      "tags": [
+        "生活"
+      ],
+      "dueDate": "2026-09-26",
+      "dueTime": "18:00",
+      "repeat": "不重复",
+      "done": false,
+      "pinned": true,
+      "createdAt": "2026-09-26T20:29:36+08:00",
+      "updatedAt": "2026-09-26T20:29:36+08:00",
+      "completedAt": null,
+      "lastNotifiedDate": null
+    },
+    {
+      "id": "memo_muida2ke_0y1fjv",
+      "content": "背英语单词 50 个",
+      "note": "",
+      "type": "学习计划",
+      "priority": "高",
+      "tags": [
+        "英语"
+      ],
+      "dueDate": "2026-09-26",
+      "dueTime": "",
+      "repeat": "每天",
+      "done": false,
+      "pinned": false,
+      "createdAt": "2026-09-26T20:29:36+08:00",
+      "updatedAt": "2026-09-26T20:29:36+08:00",
+      "completedAt": null,
+      "lastNotifiedDate": null
+    },
+    {
+      "id": "memo_muida2ke_3yhuju",
+      "content": "图书馆还书",
+      "note": "",
+      "type": "待办",
+      "priority": "中",
+      "tags": [
+        "生活"
+      ],
+      "dueDate": "2026-09-24",
+      "dueTime": "",
+      "repeat": "不重复",
+      "done": true,
+      "pinned": false,
+      "createdAt": "2026-09-26T20:29:36+08:00",
+      "updatedAt": "2026-09-26T20:29:36+08:00",
+      "completedAt": "2026-09-26T20:29:36+08:00",
+      "lastNotifiedDate": null
+    },
+    {
+      "id": "memo_muida2ke_2puutr",
+      "content": "想读一本和专业无关的书",
+      "note": "",
+      "type": "随手记",
+      "priority": "无",
+      "tags": [],
+      "dueDate": null,
+      "dueTime": "",
+      "repeat": "不重复",
+      "done": false,
+      "pinned": false,
+      "createdAt": "2026-09-26T20:29:36+08:00",
+      "updatedAt": "2026-09-26T20:29:36+08:00",
+      "completedAt": null,
+      "lastNotifiedDate": null
+    }
+  ],
+  "chat": {
+    "messages": [
+      {
+        "id": "c1",
+        "role": "user",
+        "content": "今天英语阅读做得很好",
+        "time": "2026-09-26T20:29:36+08:00"
+      },
+      {
+        "id": "c2",
+        "role": "assistant",
+        "content": "真棒，阅读能做好说明你的语感和耐心都在线，继续保持这个节奏。",
+        "time": "2026-09-26T20:29:36+08:00"
+      },
+      {
+        "id": "c3",
+        "role": "user",
+        "content": "但是专业课今天一点没背，有点焦虑",
+        "time": "2026-09-26T20:29:36+08:00"
+      },
+      {
+        "id": "c4",
+        "role": "assistant",
+        "content": "焦虑不是你不行，是你太在意了。在意是好事，只是别让它把你按住。剩下的时间先挑一小块最熟的复习一遍，比空着更踏实。",
+        "time": "2026-09-26T20:29:36+08:00"
+      }
+    ],
+    "settings": {
+      "mode": "offline",
+      "apiBase": "https://api.openai.com/v1",
+      "apiKey": "",
+      "model": "gpt-4o-mini",
+      "systemPrompt": "你是一个温暖、平静、不焦虑的考研陪伴者。用户正在备考研究生。请用简短、真诚、口语化的中文回复。多肯定用户的努力，少说教，不要制造焦虑。如果用户说做得好，就具体地夸；如果用户焦虑，就先共情，再温和提醒休息和节奏。不要长篇大论，每次回复控制在 1-3 句。"
+    }
+  },
+  "daily": {
+    "2026-09-26": {
+      "quoteIndex": 11,
+      "microTaskIndex": 31,
+      "microTaskDone": false
+    }
+  },
+  "settings": {
+    "reviewIntervals": [
+      1,
+      2,
+      4,
+      7,
+      15,
+      30
+    ],
+    "masteredDays": 60,
+    "weatherEnabled": true
+  },
+  "exportedAt": "2026-09-26T20:29:36+08:00"
+}
