@@ -1,0 +1,2970 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f7f4ee">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="背书手账">
+<meta name="format-detection" content="telephone=no">
+<title>背书手账 · 考研陪伴</title>
+<style>
+/* ============================================================
+   设计变量：温暖、安静、低饱和、像学习手账
+   ============================================================ */
+:root{
+  --bg:#f7f4ee;
+  --bg-2:#fbf9f5;
+  --card:#fffdfa;
+  --ink:#4a443c;
+  --ink-soft:#7d7466;
+  --ink-faint:#a79e91;
+  --line:#ece4d8;
+  --line-soft:#f3ede3;
+  --sage:#8aa587;
+  --sage-soft:#e9f0e6;
+  --clay:#cf9a78;
+  --clay-soft:#f8eadf;
+  --sky:#9db4c7;
+  --sky-soft:#e9f0f5;
+  --warn:#c08a72;
+  --warn-soft:#f8ece5;
+  --radius:16px;
+  --radius-sm:11px;
+  --shadow:0 2px 10px rgba(122,105,84,.06);
+  --shadow-lg:0 6px 22px rgba(122,105,84,.10);
+  --nav-h:60px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  font-size:15px;
+  line-height:1.65;
+  -webkit-text-size-adjust:100%;
+}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:.2px}
+p{margin:0}
+ul{margin:0;padding:0;list-style:none}
+
+/* ============================================================
+   布局：桌面左侧导航 / 移动端底部导航
+   ============================================================ */
+.app{display:block}
+.sidebar{
+  position:fixed;left:0;right:0;bottom:0;z-index:60;
+  background:rgba(255,253,250,.96);
+  backdrop-filter:blur(8px);
+  border-top:1px solid var(--line);
+  box-shadow:0 -2px 14px rgba(122,105,84,.06);
+}
+.brand{display:none}
+.nav{display:flex;overflow-x:auto;scrollbar-width:none;padding:6px 6px calc(6px + env(safe-area-inset-bottom));gap:2px}
+.nav::-webkit-scrollbar{display:none}
+.navbtn{
+  flex:0 0 auto;min-width:66px;
+  display:flex;flex-direction:column;align-items:center;gap:1px;
+  background:none;border:none;border-radius:12px;
+  padding:6px 8px;color:var(--ink-faint);cursor:pointer;
+  transition:background .16s,color .16s;
+}
+.navbtn .ico{font-size:17px;line-height:1.2}
+.navbtn .lbl{font-size:11px;white-space:nowrap}
+.navbtn.active{background:var(--sage-soft);color:var(--sage);font-weight:600}
+.navbtn:hover{color:var(--sage)}
+.main{padding:12px 13px calc(var(--nav-h) + 26px + env(safe-area-inset-bottom));max-width:900px;margin:0 auto}
+@media(min-width:900px){
+  .app{display:grid;grid-template-columns:210px 1fr;gap:0;align-items:start}
+  .sidebar{
+    position:sticky;top:0;left:auto;right:auto;bottom:auto;height:100vh;
+    border-top:none;border-right:1px solid var(--line);
+    background:var(--bg-2);box-shadow:none;overflow-y:auto;
+  }
+  .brand{padding:22px 18px 12px}
+  .brand-title{font-size:18px;font-weight:700;color:var(--ink)}
+  .brand-sub{font-size:12px;color:var(--ink-faint);margin-top:2px}
+  .nav{flex-direction:column;overflow:visible;padding:6px 10px;gap:3px}
+  .navbtn{flex-direction:row;justify-content:flex-start;gap:10px;min-width:0;width:100%;padding:9px 12px}
+  .navbtn .lbl{font-size:14px}
+  .navbtn .ico{font-size:16px}
+  .main{padding:22px 26px 60px;max-width:1000px;margin:0}
+  :root{--nav-h:0px}
+}
+
+/* ============================================================
+   通用组件
+   ============================================================ */
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px 15px;box-shadow:var(--shadow);margin-bottom:12px;
+}
+.card.tight{padding:12px 13px}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.card-title{font-size:15px;font-weight:600;display:flex;align-items:center;gap:7px}
+.card-sub{font-size:12.5px;color:var(--ink-faint)}
+.section-title{font-size:13px;color:var(--ink-faint);margin:18px 2px 9px;letter-spacing:.5px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row.nowrap{flex-wrap:nowrap}
+.grow{flex:1 1 auto;min-width:0}
+.spacer{flex:1 1 auto}
+.muted{color:var(--ink-faint)}
+.soft{color:var(--ink-soft)}
+.small{font-size:12.5px}
+.center{text-align:center}
+.hidden{display:none !important}
+
+/* 按钮 */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  border:1px solid var(--line);background:var(--card);color:var(--ink-soft);
+  border-radius:999px;padding:7px 14px;cursor:pointer;
+  transition:all .16s;white-space:nowrap;font-size:13.5px;
+}
+.btn:hover{border-color:var(--sage);color:var(--sage)}
+.btn.primary{background:var(--sage);border-color:var(--sage);color:#fff}
+.btn.primary:hover{background:#7c9a79;color:#fff}
+.btn.clay{background:var(--clay-soft);border-color:#efd9c8;color:#a8714c}
+.btn.clay:hover{border-color:var(--clay);color:#96603c}
+.btn.ghost{background:transparent;border-color:var(--line-soft)}
+.btn.small{padding:4px 10px;font-size:12.5px;border-radius:999px}
+.btn.tiny{padding:2px 8px;font-size:12px;border-radius:999px}
+.btn.danger{color:var(--warn);border-color:#f0ded4}
+.btn.danger:hover{background:var(--warn-soft);border-color:var(--warn)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.block{width:100%}
+.btn.sage-soft{background:var(--sage-soft);border-color:#dbe7d7;color:#5f7d5c}
+
+/* 表单 */
+.field{margin-bottom:10px}
+.field > label{display:block;font-size:12.5px;color:var(--ink-faint);margin-bottom:4px}
+.input,.select,.textarea{
+  width:100%;background:var(--bg-2);border:1px solid var(--line);
+  border-radius:var(--radius-sm);padding:9px 11px;outline:none;
+  transition:border-color .16s,background .16s;
+}
+.input:focus,.select:focus,.textarea:focus{border-color:var(--sage);background:#fff}
+.textarea{resize:vertical;min-height:72px;line-height:1.6}
+.select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--ink-faint) 50%),linear-gradient(135deg,var(--ink-faint) 50%,transparent 50%);background-position:calc(100% - 15px) 50%,calc(100% - 10px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:28px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+@media(max-width:520px){.grid3{grid-template-columns:1fr 1fr}}
+
+/* 徽章 / 小标签 */
+.tag{
+  display:inline-flex;align-items:center;gap:4px;
+  background:var(--bg-2);border:1px solid var(--line-soft);color:var(--ink-faint);
+  border-radius:999px;padding:1px 9px;font-size:11.5px;white-space:nowrap;
+}
+.tag.sage{background:var(--sage-soft);border-color:#dbe7d7;color:#63815f}
+.tag.clay{background:var(--clay-soft);border-color:#f0dccb;color:#a8734f}
+.tag.sky{background:var(--sky-soft);border-color:#dde8f0;color:#71899b}
+.tag.warn{background:var(--warn-soft);border-color:#f0ded3;color:#b07a62}
+.tags{display:flex;gap:5px;flex-wrap:wrap}
+
+/* 筛选胶囊 */
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{
+  border:1px solid var(--line);background:var(--card);border-radius:999px;
+  padding:4px 12px;font-size:12.5px;color:var(--ink-soft);cursor:pointer;transition:all .15s;
+}
+.chip:hover{border-color:var(--sage)}
+.chip.active{background:var(--sage);border-color:var(--sage);color:#fff}
+
+/* 顶部时间栏 */
+.topbar{position:sticky;top:0;z-index:40;margin:-12px -13px 12px;padding:10px 13px 9px;
+  background:linear-gradient(180deg,rgba(247,244,238,.98),rgba(247,244,238,.9));
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line-soft);}
+@media(min-width:900px){.topbar{margin:-22px -26px 16px;padding:14px 26px 11px}}
+.topbar-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.clock-time{font-size:23px;font-weight:600;letter-spacing:1.5px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.clock-date{font-size:12.5px;color:var(--ink-faint);margin-top:-2px}
+.stats{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
+.stat{
+  background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:5px 11px;display:flex;flex-direction:column;align-items:center;
+  cursor:pointer;transition:all .16s;min-width:62px;
+}
+.stat:hover{border-color:var(--sage)}
+.stat-num{font-size:16px;font-weight:600;line-height:1.15;color:var(--sage)}
+.stat-lbl{font-size:10.5px;color:var(--ink-faint);white-space:nowrap}
+.stat.warn .stat-num{color:var(--warn)}
+.weather-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:12.5px;color:var(--ink-soft)}
+.weather-line .sep{color:var(--line)}
+.weather-loading{color:var(--ink-faint)}
+
+/* 记忆条目 */
+.item{border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--card);padding:11px 12px;margin-bottom:9px}
+.item.due{border-left:3px solid var(--sage)}
+.item.over{border-left:3px solid var(--warn)}
+.item.mastered{opacity:.72}
+.item-q{font-size:14.5px;font-weight:600;margin-bottom:4px;word-break:break-word}
+.item-a{font-size:13.5px;color:var(--ink-soft);white-space:pre-wrap;margin-top:7px;padding-top:7px;border-top:1px dashed var(--line)}
+.item-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--ink-faint);margin-top:4px}
+.item-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.subject-head{display:flex;align-items:center;gap:8px;margin:14px 2px 8px}
+.subject-head .dot{width:7px;height:7px;border-radius:50%;background:var(--sage)}
+.subject-head .name{font-weight:600;font-size:14px}
+.subject-head .count{font-size:12px;color:var(--ink-faint)}
+
+/* 复习自评按钮 */
+.rate-bar{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.rate-bar .btn{flex:1 1 0;min-width:76px}
+.empty{padding:22px 12px;text-align:center;color:var(--ink-faint);font-size:13.5px;line-height:1.8}
+
+/* 每日一句 */
+.quote-card{background:linear-gradient(160deg,#fffdfa,#fbf6ef);border:1px solid var(--line)}
+.quote-text{font-size:14.5px;line-height:1.85;color:var(--ink);white-space:pre-wrap}
+.quote-mark{font-size:22px;color:var(--clay);line-height:1;opacity:.6}
+
+/* 每日小事 */
+.micro{display:flex;align-items:center;gap:10px;background:var(--bg-2);border:1px dashed var(--line);border-radius:var(--radius-sm);padding:11px 12px}
+.micro .txt{flex:1 1 auto;font-size:14px}
+.micro.done{background:var(--sage-soft);border-style:solid;border-color:#dbe7d7}
+.micro.done .txt{color:#63815f;text-decoration:line-through;opacity:.8}
+
+/* 备忘录 */
+.memo{border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--card);padding:10px 12px;margin-bottom:8px;position:relative;overflow:hidden}
+.memo::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--line)}
+.memo.p-high::before{background:#d99f8c}
+.memo.p-mid::before{background:#dfc08d}
+.memo.p-low::before{background:var(--sky)}
+.memo.p-none::before{background:var(--line)}
+.memo.is-done{background:var(--bg-2);opacity:.72}
+.memo.is-done .memo-content{text-decoration:line-through;color:var(--ink-faint)}
+.memo.is-pinned{background:linear-gradient(120deg,#fffdfa,#fdf7ef)}
+.memo.pin-mark{font-size:11px;color:var(--clay)}
+.memo-content{font-size:14.5px;font-weight:600;word-break:break-word;line-height:1.5}
+.memo-note{font-size:12.5px;color:var(--ink-soft);white-space:pre-wrap;margin-top:3px}
+.memo-meta{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-top:6px}
+.memo-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.memo-check{display:flex;align-items:flex-start;gap:9px}
+.cbox{
+  flex:0 0 auto;width:19px;height:19px;border-radius:6px;border:1.5px solid var(--line);
+  background:var(--bg-2);cursor:pointer;margin-top:2px;display:flex;align-items:center;justify-content:center;
+  font-size:12px;color:#fff;transition:all .15s;
+}
+.cbox:hover{border-color:var(--sage)}
+.cbox.on{background:var(--sage);border-color:var(--sage)}
+.due-overdue{color:var(--warn)}
+.due-today{color:#8a9a6f}
+
+/* 聊天 */
+.chat-card{display:flex;flex-direction:column;height:62vh;min-height:380px;padding:0;overflow:hidden}
+@media(min-width:900px){.chat-card{height:66vh}}
+.chat-head{display:flex;align-items:center;gap:8px;padding:11px 13px;border-bottom:1px solid var(--line-soft);background:var(--bg-2)}
+.chat-mode-dot{width:7px;height:7px;border-radius:50%;background:var(--sage)}
+.chat-mode-dot.online{background:var(--sky)}
+.msgs{flex:1 1 auto;overflow-y:auto;padding:13px 12px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(180deg,#fdfbf7,#fffdfa)}
+.msg{display:flex;gap:7px;max-width:100%}
+.msg .avatar{flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:var(--sage-soft);display:flex;align-items:center;justify-content:center;font-size:14px}
+.msg .bubble{
+  border-radius:16px;padding:9px 13px;font-size:14px;line-height:1.7;
+  white-space:pre-wrap;word-break:break-word;max-width:78%;
+}
+.msg.assistant .bubble{background:var(--sage-soft);color:#4e5c4c;border-top-left-radius:5px}
+.msg.user{flex-direction:row-reverse}
+.msg.user .bubble{background:#f3ece1;color:var(--ink);border-top-right-radius:5px;border:1px solid var(--line-soft)}
+.msg.user .avatar{background:var(--clay-soft)}
+.msg .time{font-size:10.5px;color:var(--ink-faint);align-self:flex-end;padding-bottom:3px}
+.msg.sys{justify-content:center}
+.msg.sys .bubble{background:transparent;color:var(--ink-faint);font-size:12px;max-width:100%;text-align:center;padding:2px 0}
+.quick-bar{display:flex;gap:6px;overflow-x:auto;padding:9px 12px 0;scrollbar-width:none}
+.quick-bar::-webkit-scrollbar{display:none}
+.quick-bar .btn{flex:0 0 auto}
+.chat-input{border-top:1px solid var(--line-soft);padding:9px 11px;background:var(--card);display:flex;gap:8px;align-items:flex-end}
+.chat-input textarea{flex:1 1 auto;min-height:40px;max-height:120px;resize:none;border-radius:14px;padding:10px 12px;background:var(--bg-2);border:1px solid var(--line);outline:none}
+.chat-input textarea:focus{border-color:var(--sage);background:#fff}
+
+/* 弹层 */
+.modal{position:fixed;inset:0;z-index:90;background:rgba(74,68,60,.34);display:flex;align-items:flex-end;justify-content:center;padding:0}
+@media(min-width:640px){.modal{align-items:center;padding:20px}}
+.modal-panel{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;padding:16px 16px 20px;box-shadow:var(--shadow-lg)}
+@media(min-width:640px){.modal-panel{border-radius:20px}}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:12px}
+
+/* 提示条 */
+.toast-wrap{position:fixed;left:0;right:0;bottom:calc(var(--nav-h) + 14px);z-index:120;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;padding:0 14px}
+@media(min-width:900px){.toast-wrap{bottom:26px}}
+.toast{
+  background:rgba(74,68,60,.93);color:#fdfbf7;border-radius:999px;
+  padding:8px 17px;font-size:13px;max-width:92%;text-align:center;
+  box-shadow:var(--shadow-lg);animation:toastIn .22s ease;
+}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* 统计小格 */
+.mini-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(78px,1fr));gap:8px}
+.mini{background:var(--bg-2);border:1px solid var(--line-soft);border-radius:var(--radius-sm);padding:9px;text-align:center}
+.mini b{display:block;font-size:17px;color:var(--sage);line-height:1.3}
+.mini span{font-size:11.5px;color:var(--ink-faint)}
+
+.hint{background:var(--bg-2);border:1px dashed var(--line);border-radius:var(--radius-sm);padding:9px 11px;font-size:12.5px;color:var(--ink-soft);line-height:1.75}
+.hint.warm{background:var(--clay-soft);border-style:solid;border-color:#f0dccb;color:#8f6746}
+.hint.sky{background:var(--sky-soft);border-style:solid;border-color:#dde8f0;color:#5f7889}
+details.fold{border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--card);padding:9px 12px;margin-bottom:9px}
+details.fold > summary{cursor:pointer;font-size:13.5px;color:var(--ink-soft);list-style:none;outline:none}
+details.fold > summary::-webkit-details-marker{display:none}
+details.fold > summary::before{content:"▸ ";color:var(--ink-faint)}
+details.fold[open] > summary::before{content:"▾ "}
+details.fold .fold-body{margin-top:9px}
+@media print{.sidebar,.topbar{display:none}}
+
+/* ============================================================
+   触屏 / 平板 / 手机 适配（新增）
+   ============================================================ */
+/* iOS 上输入框字号小于 16px 时聚焦会自动放大整页 —— 移动端统一 16px 避免这个问题 */
+@media (max-width:900px){
+  .input,.select,.textarea,.chat-input textarea{font-size:16px}
+}
+/* 触屏设备：把偏小的可点区域放大到手指好按的尺寸 */
+@media (pointer:coarse){
+  .cbox{width:24px;height:24px;border-radius:8px;font-size:13px}
+  .btn.tiny{padding:6px 12px;font-size:13px}
+  .btn.small{padding:7px 15px}
+  .chip{padding:6px 14px}
+  .navbtn{padding:8px 10px}
+  .stat{min-width:70px}
+  .msg .bubble{max-width:86%}
+  .rate-bar .btn{min-width:88px}
+}
+/* 聊天区跟随可视高度，iOS 地址栏收起时不会被裁掉 */
+@supports (height: 100dvh){
+  .chat-card{height:62dvh}
+  @media (min-width:900px){.chat-card{height:66dvh}}
+}
+/* 横屏平板：内容不要拉得过宽，保持阅读节奏 */
+@media (min-width:1100px){ .main{max-width:1040px} }
+/* 聊天记录区自己滚动，不带着整页一起弹 */
+.msgs{overscroll-behavior:contain}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- ================= 左侧 / 底部 导航 ================= -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-title">背书手账</div>
+      <div class="brand-sub">考研 · 慢慢来，比较快</div>
+    </div>
+    <nav class="nav" id="nav">
+      <button class="navbtn active" data-tab="home"><span class="ico">🏠</span><span class="lbl">首页</span></button>
+      <button class="navbtn" data-tab="review"><span class="ico">📖</span><span class="lbl">今日复习</span></button>
+      <button class="navbtn" data-tab="input"><span class="ico">✍️</span><span class="lbl">录入背诵</span></button>
+      <button class="navbtn" data-tab="quiz"><span class="ico">🎲</span><span class="lbl">抽背</span></button>
+      <button class="navbtn" data-tab="all"><span class="ico">📚</span><span class="lbl">全部条目</span></button>
+      <button class="navbtn" data-tab="memo"><span class="ico">📝</span><span class="lbl">备忘录</span></button>
+      <button class="navbtn" data-tab="chat"><span class="ico">💬</span><span class="lbl">AI 陪伴</span></button>
+      <button class="navbtn" data-tab="settings"><span class="ico">⚙️</span><span class="lbl">设置/备份</span></button>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <!-- ================= 顶部：时间 / 日期 / 天气 / 数量 ================= -->
+    <header class="topbar">
+      <div class="topbar-row">
+        <div>
+          <div class="clock-time" id="clockTime">--:--:--</div>
+          <div class="clock-date" id="clockDate">加载中…</div>
+        </div>
+        <div class="stats">
+          <button class="stat" data-goto="review"><span class="stat-num" id="statDue">0</span><span class="stat-lbl">今日待复习</span></button>
+          <button class="stat" data-goto="memo"><span class="stat-num" id="statMemoToday">0</span><span class="stat-lbl">今日待办</span></button>
+          <button class="stat warn" data-goto="memo"><span class="stat-num" id="statMemoOver">0</span><span class="stat-lbl">逾期未完成</span></button>
+        </div>
+      </div>
+      <div class="weather-line" id="weatherLine"><span class="weather-loading">正在看看北京今天怎么样…</span></div>
+    </header>
+
+    <!-- ============================================================
+         首页
+         ============================================================ -->
+    <section class="panel active" id="tab-home">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title" id="greeting">你好呀</div>
+          <div class="card-sub" id="greetingSub"></div>
+        </div>
+        <div class="mini-stats">
+          <div class="mini"><b id="homeDue">0</b><span>今日待复习</span></div>
+          <div class="mini"><b id="homeMemoToday">0</b><span>今日待办</span></div>
+          <div class="mini"><b id="homeMemoOver">0</b><span>逾期未完成</span></div>
+          <div class="mini"><b id="homeTotal">0</b><span>记忆条目</span></div>
+        </div>
+        <div class="row" style="margin-top:11px">
+          <button class="btn primary small" data-goto="review">去复习</button>
+          <button class="btn small" data-goto="input">记一条新的</button>
+          <button class="btn small" data-goto="memo">写备忘</button>
+          <button class="btn small" data-goto="quiz">随便抽背</button>
+        </div>
+      </div>
+
+      <!-- 今日备忘 提示区 -->
+      <div class="card" id="memoBriefCard">
+        <div class="card-head">
+          <div class="card-title">📝 今日备忘</div>
+          <button class="btn tiny ghost" id="btnMemoBriefGo">查看全部</button>
+        </div>
+        <div id="memoBriefBody" class="small soft">暂无备忘。</div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn tiny" id="btnNotifyPerm">开启到期提醒</button>
+          <button class="btn tiny ghost" id="btnCheckNow">立即检查一次</button>
+        </div>
+        <div class="small muted" id="notifyState" style="margin-top:6px"></div>
+      </div>
+
+      <!-- 每日一句 -->
+      <div class="card quote-card">
+        <div class="card-head">
+          <div class="card-title"><span class="quote-mark">❝</span> 每日一句</div>
+          <div class="card-sub" id="quoteDateLabel"></div>
+        </div>
+        <div class="quote-text" id="quoteText"></div>
+      </div>
+
+      <!-- 每日小事 -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">🌿 今天，拾取一件小事</div>
+          <div class="card-sub">每天只一件，做完就很好</div>
+        </div>
+        <div class="micro" id="microBox">
+          <span class="txt" id="microText">…</span>
+          <button class="btn primary small" id="btnMicroDone">完成</button>
+        </div>
+        <div class="small muted" id="microTip" style="margin-top:7px"></div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         今日复习
+         ============================================================ -->
+    <section class="panel hidden" id="tab-review">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">📖 今日待复习</div>
+          <div class="card-sub" id="reviewDateLabel"></div>
+        </div>
+        <div id="reviewSummary" class="small soft"></div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn small" id="btnReviewRefresh">刷新列表</button>
+          <button class="btn small" data-goto="quiz">改成抽背这种形式</button>
+        </div>
+      </div>
+      <div id="reviewList"></div>
+    </section>
+
+    <!-- ============================================================
+         录入背诵
+         ============================================================ -->
+    <section class="panel hidden" id="tab-input">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">✍️ 录入今天背了什么</div>
+          <div class="card-sub">保存后自动生成复习计划</div>
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label>科目 *</label>
+            <input class="input" id="inSubject" placeholder="教育学 / 英语 / 政治…" list="subjectList">
+            <datalist id="subjectList"></datalist>
+          </div>
+          <div class="field">
+            <label>章节 / 来源</label>
+            <input class="input" id="inChapter" placeholder="第一章 / 真题阅读…">
+          </div>
+        </div>
+        <div class="field">
+          <label>标题</label>
+          <input class="input" id="inTitle" placeholder="给这条内容起个小名字">
+        </div>
+        <div class="field">
+          <label>问题（抽背时会先显示这一条）</label>
+          <textarea class="textarea" id="inQuestion" placeholder="例：教育的本质是什么？"></textarea>
+        </div>
+        <div class="field">
+          <label>答案 / 原文 *</label>
+          <textarea class="textarea" id="inAnswer" style="min-height:96px" placeholder="把要背的内容写在这里…"></textarea>
+        </div>
+        <div class="grid3">
+          <div class="field">
+            <label>重要程度</label>
+            <select class="select" id="inImportance">
+              <option>高</option><option selected>中</option><option>低</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>学习日期</label>
+            <input class="input" type="date" id="inLearnedAt">
+          </div>
+          <div class="field">
+            <label>&nbsp;</label>
+            <button class="btn primary block" id="btnSaveItem">保存并生成计划</button>
+          </div>
+        </div>
+        <div class="small muted" id="saveHint" style="margin-top:4px"></div>
+      </div>
+
+      <details class="fold">
+        <summary>快速批量录入（每行一条：科目 | 问题 | 答案）</summary>
+        <div class="fold-body">
+          <div class="field">
+            <label>批量内容</label>
+            <textarea class="textarea" id="batchText" style="min-height:120px" placeholder="教育学 | 教育的本质是什么？ | 教育是有目的地培养人的社会活动…&#10;英语 | abandon 的意思 | 放弃；抛弃"></textarea>
+          </div>
+          <div class="grid2">
+            <div class="field">
+              <label>统一章节 / 来源（可选）</label>
+              <input class="input" id="batchChapter" placeholder="第一章">
+            </div>
+            <div class="field">
+              <label>统一重要程度</label>
+              <select class="select" id="batchImportance"><option>高</option><option selected>中</option><option>低</option></select>
+            </div>
+          </div>
+          <div class="field">
+            <label>统一学习日期</label>
+            <input class="input" type="date" id="batchLearnedAt">
+          </div>
+          <button class="btn primary" id="btnBatchSave">批量保存</button>
+          <div class="small muted" id="batchHint" style="margin-top:6px"></div>
+        </div>
+      </details>
+    </section>
+
+    <!-- ============================================================
+         抽背
+         ============================================================ -->
+    <section class="panel hidden" id="tab-quiz">
+      <div class="card" id="quizSetup">
+        <div class="card-head">
+          <div class="card-title">🎲 抽背</div>
+          <div class="card-sub">先看问题，想好了再翻答案</div>
+        </div>
+        <div class="field">
+          <label>从哪儿抽</label>
+          <select class="select" id="quizSource">
+            <option value="due">今日待复习（优先）</option>
+            <option value="all">全部条目</option>
+            <option value="subject">指定科目</option>
+          </select>
+        </div>
+        <div class="field hidden" id="quizSubjectField">
+          <label>科目</label>
+          <select class="select" id="quizSubject"></select>
+        </div>
+        <div class="row">
+          <button class="btn primary" id="btnQuizStart">开始抽背</button>
+          <button class="btn" id="btnQuizOne">只抽一条</button>
+        </div>
+        <div class="small muted" id="quizHint" style="margin-top:8px"></div>
+      </div>
+
+      <div class="card hidden" id="quizCard">
+        <div class="card-head">
+          <div class="card-title" id="quizProgress">抽背中</div>
+          <button class="btn tiny ghost" id="btnQuizEnd">结束本轮</button>
+        </div>
+        <div class="item-meta" id="quizMeta" style="margin-bottom:8px"></div>
+        <div class="item-q" id="quizQuestion"></div>
+        <div id="quizAnswerBox" class="hidden">
+          <div class="item-a" id="quizAnswer"></div>
+        </div>
+        <div class="row" style="margin-top:11px">
+          <button class="btn primary" id="btnShowAnswer">显示答案</button>
+          <button class="btn small" id="btnQuizSkip">跳过这条</button>
+        </div>
+        <div class="rate-bar hidden" id="quizRateBar">
+          <button class="btn sage-soft" data-rate="记得">记得</button>
+          <button class="btn" data-rate="模糊">模糊</button>
+          <button class="btn danger" data-rate="忘记">忘记</button>
+        </div>
+      </div>
+
+      <div class="card hidden" id="quizResult">
+        <div class="card-title">🌱 本轮抽背结果</div>
+        <div class="small soft" id="quizResultText" style="margin-top:7px"></div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn primary small" id="btnQuizAgain">再来一轮</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         全部条目
+         ============================================================ -->
+    <section class="panel hidden" id="tab-all">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">📚 全部条目</div>
+          <div class="card-sub" id="allCountLabel"></div>
+        </div>
+        <div class="grid2">
+          <div class="field" style="margin-bottom:8px">
+            <label>搜索（标题 / 问题 / 答案 / 章节）</label>
+            <input class="input" id="allSearch" placeholder="输入关键词…">
+          </div>
+          <div class="field" style="margin-bottom:8px">
+            <label>科目筛选</label>
+            <select class="select" id="allSubject"><option value="">全部科目</option></select>
+          </div>
+        </div>
+        <div class="chips">
+          <button class="chip active" data-allstate="todo">未掌握</button>
+          <button class="chip" data-allstate="due">待复习</button>
+          <button class="chip" data-allstate="mastered">已掌握</button>
+          <button class="chip" data-allstate="all">全部</button>
+        </div>
+      </div>
+      <div id="allList"></div>
+    </section>
+
+    <!-- ============================================================
+         备忘录
+         ============================================================ -->
+    <section class="panel hidden" id="tab-memo">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">📝 快速添加</div>
+          <div class="card-sub">只写内容也能存</div>
+        </div>
+        <div class="field">
+          <input class="input" id="memoContent" placeholder="内容（必填）：去打印店取资料…">
+        </div>
+        <details class="fold" id="memoMore">
+          <summary>更多选项（备注 / 日期 / 时间 / 类型 / 优先级 / 标签 / 重复）</summary>
+          <div class="fold-body">
+            <div class="field">
+              <label>备注</label>
+              <textarea class="textarea" id="memoNote" style="min-height:54px" placeholder="可选，比如：别忘了带U盘"></textarea>
+            </div>
+            <div class="grid2">
+              <div class="field">
+                <label>日期</label>
+                <input class="input" type="date" id="memoDate">
+              </div>
+              <div class="field">
+                <label>时间</label>
+                <input class="input" type="time" id="memoTime">
+              </div>
+            </div>
+            <div class="field">
+              <label><input type="checkbox" id="memoNoDate" style="vertical-align:-1px"> 无日期（不确定什么时候做）</label>
+            </div>
+            <div class="grid2">
+              <div class="field">
+                <label>类型</label>
+                <select class="select" id="memoType">
+                  <option>待办</option><option>学习计划</option><option>生活杂事</option><option>随手记</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>优先级</label>
+                <select class="select" id="memoPriority">
+                  <option>高</option><option selected>中</option><option>低</option><option>无</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid2">
+              <div class="field">
+                <label>标签（逗号 / 空格分隔）</label>
+                <input class="input" id="memoTags" placeholder="英语, 生活" list="tagList">
+                <datalist id="tagList"></datalist>
+              </div>
+              <div class="field">
+                <label>重复</label>
+                <select class="select" id="memoRepeat">
+                  <option>不重复</option><option>每天</option><option>每周</option><option>每月</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </details>
+        <div class="row" style="margin-top:10px">
+          <button class="btn primary" id="btnMemoAdd">添加备忘</button>
+          <button class="btn small" id="btnMemoToday">日期设为今天</button>
+          <span class="small muted" id="memoHint"></span>
+        </div>
+      </div>
+
+      <div class="card tight">
+        <div class="mini-stats">
+          <div class="mini"><b id="memoStatToday">0</b><span>今天</span></div>
+          <div class="mini"><b id="memoStatOver">0</b><span>逾期</span></div>
+          <div class="mini"><b id="memoStatOpen">0</b><span>未完成</span></div>
+          <div class="mini"><b id="memoStatDone">0</b><span>已完成</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="field" style="margin-bottom:9px">
+          <input class="input" id="memoSearch" placeholder="搜索内容 / 备注 / 标签…">
+        </div>
+        <div class="chips" id="memoStatusChips">
+          <button class="chip active" data-mstatus="all">全部</button>
+          <button class="chip" data-mstatus="open">未完成</button>
+          <button class="chip" data-mstatus="done">已完成</button>
+          <button class="chip" data-mstatus="today">今天</button>
+          <button class="chip" data-mstatus="overdue">逾期</button>
+          <button class="chip" data-mstatus="nodate">无日期</button>
+        </div>
+        <div class="grid2" style="margin-top:9px">
+          <div class="field" style="margin-bottom:0">
+            <label>按类型</label>
+            <select class="select" id="memoTypeFilter">
+              <option value="">全部类型</option>
+              <option>待办</option><option>学习计划</option><option>生活杂事</option><option>随手记</option>
+            </select>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label>按标签</label>
+            <select class="select" id="memoTagFilter"><option value="">全部标签</option></select>
+          </div>
+        </div>
+        <div class="row" style="margin-top:9px">
+          <label class="small muted"><input type="checkbox" id="memoShowDone"> 展开已完成的备忘</label>
+          <button class="btn tiny ghost" id="btnMemoCleanDone">清理已完成</button>
+        </div>
+      </div>
+
+      <div id="memoList"></div>
+    </section>
+
+    <!-- ============================================================
+         AI 陪伴聊天
+         ============================================================ -->
+    <section class="panel hidden" id="tab-chat">
+      <div class="card chat-card">
+        <div class="chat-head">
+          <span class="chat-mode-dot" id="chatModeDot"></span>
+          <div class="grow">
+            <div style="font-size:14px;font-weight:600">陪你聊聊天</div>
+            <div class="small muted" id="chatModeLabel">离线模式 · 不联网</div>
+          </div>
+          <button class="btn tiny ghost" id="btnChatClear">清空聊天</button>
+        </div>
+        <div class="msgs" id="chatMsgs"></div>
+        <div class="quick-bar" id="quickBar">
+          <button class="btn tiny" data-quick="夸夸我">夸夸我</button>
+          <button class="btn tiny" data-quick="安慰我一下">安慰我一下</button>
+          <button class="btn tiny" data-quick="今天学得好累">今天学得好累</button>
+          <button class="btn tiny" data-quick="我有点焦虑">我有点焦虑</button>
+          <button class="btn tiny" data-quick="帮我复盘今天">帮我复盘今天</button>
+          <button class="btn tiny" data-quick="给我一句鼓励">给我一句鼓励</button>
+        </div>
+        <div class="chat-input">
+          <textarea id="chatInput" rows="1" placeholder="想说什么都可以，Enter 发送，Shift+Enter 换行…"></textarea>
+          <button class="btn primary" id="btnChatSend">发送</button>
+        </div>
+      </div>
+      <div class="small muted" style="margin:2px 4px 12px">这里的话只存在你自己的浏览器里，不会上传到任何地方。</div>
+    </section>
+
+    <!-- ============================================================
+         设置 / 备份
+         ============================================================ -->
+    <section class="panel hidden" id="tab-settings">
+      <div class="card">
+        <div class="card-title">🧭 复习节奏</div>
+        <div class="field" style="margin-top:10px">
+          <label>艾宾浩斯复习间隔（天，用逗号分隔）</label>
+          <input class="input" id="setIntervals" placeholder="1, 2, 4, 7, 15, 30">
+        </div>
+        <div class="field">
+          <label>全部阶段完成后，多少天再巩固一次</label>
+          <input class="input" id="setMasteredDays" type="number" min="1" max="365">
+        </div>
+        <div class="row">
+          <button class="btn primary small" id="btnSaveIntervals">保存节奏</button>
+          <button class="btn small" id="btnResetIntervals">恢复默认</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🌤️ 天气与提醒</div>
+        <div class="row" style="margin-top:10px">
+          <label class="small muted"><input type="checkbox" id="setWeatherEnabled"> 显示北京天气</label>
+          <button class="btn tiny" id="btnWeatherRefresh">刷新天气</button>
+          <button class="btn tiny" id="btnNotifyPerm2">开启到期提醒</button>
+        </div>
+        <div class="small muted" id="notifyState2" style="margin-top:8px"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💬 AI 陪伴设置</div>
+        <div class="field" style="margin-top:10px">
+          <label>回复模式</label>
+          <select class="select" id="setChatMode">
+            <option value="offline">离线模式（默认，不联网）</option>
+            <option value="online">在线 AI 模式（调用你自己的接口）</option>
+          </select>
+        </div>
+        <div id="onlineSettings" class="hidden">
+          <div class="field">
+            <label>API 地址</label>
+            <input class="input" id="setApiBase" placeholder="https://api.openai.com/v1">
+          </div>
+          <div class="field">
+            <label>API Key</label>
+            <input class="input" id="setApiKey" type="password" placeholder="sk-…">
+          </div>
+          <div class="field">
+            <label>模型名</label>
+            <input class="input" id="setModel" placeholder="gpt-4o-mini">
+          </div>
+          <div class="field">
+            <label>系统提示词</label>
+            <textarea class="textarea" id="setSystemPrompt" style="min-height:110px"></textarea>
+          </div>
+          <div class="hint warm">⚠️ 单文件前端没有后端保管密钥，Key 会明文存在本机 localStorage 里。建议用权限最低、额度最小的 Key，并且只在自己电脑上用。若不方便，用离线模式也完全够用。</div>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn primary small" id="btnSaveChatSettings">保存 AI 设置</button>
+          <button class="btn small" id="btnTestChat">测试一下连接</button>
+        </div>
+        <div class="small muted" id="chatSetHint" style="margin-top:6px"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💾 数据备份</div>
+        <div class="small muted" style="margin:6px 0 10px">数据都在本机 localStorage 的 <code>beishu_app_v1</code> 里。导出文件包含背诵条目、备忘录、聊天记录和设置。</div>
+        <div class="row">
+          <button class="btn primary small" id="btnExport">导出 JSON 备份</button>
+          <button class="btn small" id="btnImport">导入 JSON 恢复</button>
+          <input type="file" id="importFile" accept="application/json,.json" class="hidden">
+        </div>
+        <div class="small muted" id="backupHint" style="margin-top:8px"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📊 数据统计</div>
+        <div class="mini-stats" style="margin-top:10px">
+          <div class="mini"><b id="setStatItems">0</b><span>背诵条目</span></div>
+          <div class="mini"><b id="setStatMastered">0</b><span>已掌握</span></div>
+          <div class="mini"><b id="setStatReviews">0</b><span>复习次数</span></div>
+          <div class="mini"><b id="setStatMemos">0</b><span>备忘</span></div>
+          <div class="mini"><b id="setStatChats">0</b><span>聊天消息</span></div>
+        </div>
+        <div class="row" style="margin-top:11px">
+          <button class="btn small danger" id="btnClearAll">清空全部数据</button>
+        </div>
+        <div class="small muted" style="margin-top:7px">清空前会二次确认，并建议你先导出一份备份。</div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ================= 备忘录编辑弹层 ================= -->
+<div class="modal hidden" id="memoModal">
+  <div class="modal-panel">
+    <div class="modal-title">编辑备忘</div>
+    <input type="hidden" id="edId">
+    <div class="field"><label>内容 *</label><input class="input" id="edContent"></div>
+    <div class="field"><label>备注</label><textarea class="textarea" id="edNote" style="min-height:54px"></textarea></div>
+    <div class="grid2">
+      <div class="field"><label>日期</label><input class="input" type="date" id="edDate"></div>
+      <div class="field"><label>时间</label><input class="input" type="time" id="edTime"></div>
+    </div>
+    <div class="field"><label><input type="checkbox" id="edNoDate" style="vertical-align:-1px"> 无日期</label></div>
+    <div class="grid2">
+      <div class="field"><label>类型</label>
+        <select class="select" id="edType"><option>待办</option><option>学习计划</option><option>生活杂事</option><option>随手记</option></select>
+      </div>
+      <div class="field"><label>优先级</label>
+        <select class="select" id="edPriority"><option>高</option><option>中</option><option>低</option><option>无</option></select>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>标签</label><input class="input" id="edTags" placeholder="英语, 生活"></div>
+      <div class="field"><label>重复</label>
+        <select class="select" id="edRepeat"><option>不重复</option><option>每天</option><option>每周</option><option>每月</option></select>
+      </div>
+    </div>
+    <div class="row" style="margin-top:6px">
+      <button class="btn primary" id="btnMemoSaveEdit">保存</button>
+      <button class="btn" id="btnMemoCancelEdit">取消</button>
+      <button class="btn danger" id="btnMemoDeleteEdit">删除</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 通用确认弹层 ================= -->
+<div class="modal hidden" id="confirmModal">
+  <div class="modal-panel" style="max-width:420px">
+    <div class="modal-title" id="confirmTitle">确认</div>
+    <div class="small soft" id="confirmText" style="margin-bottom:14px"></div>
+    <div class="row">
+      <button class="btn primary" id="btnConfirmYes">确定</button>
+      <button class="btn" id="btnConfirmNo">取消</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+<script>
+"use strict";
+/* =====================================================================
+   背书手账 · 考研背书 + 艾宾浩斯复习 + 抽背 + 备忘录 + AI 陪伴
+   单用户 / 纯前端 / 单文件 / localStorage / 无后端
+   数据 key：beishu_app_v1
+   ===================================================================== */
+
+/* =====================================================================
+   0. 常量与工具函数
+   ===================================================================== */
+const STORAGE_KEY = 'beishu_app_v1';
+const DEFAULT_INTERVALS = [1, 2, 4, 7, 15, 30];
+const DEFAULT_MASTERED_DAYS = 60;
+const MAX_CHAT_MESSAGES = 200;          // 聊天记录最多保留最近 200 条
+const CHAT_CONTEXT_LIMIT = 20;          // 在线模式带上最近 20 条记录
+const DEFAULT_API_BASE = 'https://api.openai.com/v1';
+const DEFAULT_MODEL = 'gpt-4o-mini';
+const DEFAULT_SYSTEM_PROMPT =
+  '你是一个温暖、平静、不焦虑的考研陪伴者。用户正在备考研究生。请用简短、真诚、口语化的中文回复。' +
+  '多肯定用户的努力，少说教，不要制造焦虑。如果用户说做得好，就具体地夸；如果用户焦虑，就先共情，再温和提醒休息和节奏。' +
+  '不要长篇大论，每次回复控制在 1-3 句。';
+
+const MEMO_TYPES = ['待办', '学习计划', '生活杂事', '随手记'];
+const MEMO_PRIORITIES = ['高', '中', '低', '无'];
+const MEMO_REPEATS = ['不重复', '每天', '每周', '每月'];
+
+/* ---------- 时间 / 日期（全部使用本地时区，不碰 UTC） ---------- */
+function pad2(n) { return String(n).padStart(2, '0'); }
+function dateToStr(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+function todayStr() { return dateToStr(new Date()); }
+function parseDateStr(s) {
+  if (!s || typeof s !== 'string') return null;
+  const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (!m) return null;
+  return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+}
+function addDaysStr(s, n) {
+  const d = parseDateStr(s) || new Date();
+  d.setDate(d.getDate() + n);
+  return dateToStr(d);
+}
+/* 下个月同一天；若该日不存在（如 1/31 → 2月），取当月最后一天 */
+function addMonthsStr(s, n) {
+  const d = parseDateStr(s) || new Date();
+  const y = d.getFullYear(), m = d.getMonth() + n, day = d.getDate();
+  const lastDay = new Date(y, m + 1, 0).getDate();
+  return dateToStr(new Date(y, m, Math.min(day, lastDay)));
+}
+function weekdayCN(d) { return '星期' + '日一二三四五六'[d.getDay()]; }
+function dateLabelCN(s) {
+  const d = parseDateStr(s);
+  if (!d) return '无日期';
+  return d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + weekdayCN(d);
+}
+/* 相对今天的自然语言描述 */
+function relDayLabel(s) {
+  if (!s) return '无日期';
+  const t = todayStr();
+  if (s === t) return '今天';
+  const d1 = parseDateStr(s), d2 = parseDateStr(t);
+  const diff = Math.round((d1 - d2) / 86400000);
+  if (diff === 1) return '明天';
+  if (diff === -1) return '昨天';
+  if (diff < 0) return '逾期 ' + Math.abs(diff) + ' 天';
+  if (diff <= 7) return diff + ' 天后';
+  return s;
+}
+function nowISO() {
+  const d = new Date();
+  const off = -d.getTimezoneOffset();
+  const sign = off >= 0 ? '+' : '-';
+  const oh = pad2(Math.floor(Math.abs(off) / 60)), om = pad2(Math.abs(off) % 60);
+  return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) +
+    'T' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ':' + pad2(d.getSeconds()) + sign + oh + ':' + om;
+}
+function timeLabelFromISO(iso) {
+  const m = String(iso || '').match(/T(\d{2}):(\d{2})/);
+  return m ? m[1] + ':' + m[2] : '';
+}
+function uid(prefix) {
+  return (prefix || 'id') + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+}
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function clampNum(v, min, max, dflt) {
+  const n = Number(v);
+  if (!isFinite(n)) return dflt;
+  return Math.min(max, Math.max(min, n));
+}
+/* 同一天固定、跨天变化的索引（用于每日一句 / 每日小事） */
+function dailyIndex(len, salt) {
+  if (!len) return 0;
+  const s = todayStr() + '#' + (salt || '');
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+  return h % len;
+}
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => Array.prototype.slice.call(document.querySelectorAll(sel));
+
+/* =====================================================================
+   1. 内置内容库：每日一句 / 每日小事 / 北京天气码
+   ===================================================================== */
+
+/* ---------- 每日一句：32 句，按日期固定 ---------- */
+const QUOTES = [
+  '稻盛和夫说：渔夫出海前，并不知道鱼在哪里，可是他们还是选择出发，因为他们相信一定会满载而归。人生很多时候，是选择了才会有机会，是相信了才有可能。',
+  '你今天背下来的每一个字，都会在某个考场的早晨，安静地替你说话。',
+  '不必每天都状态很好，只要每天都还在做。',
+  '慢一点没关系，考研是长跑，跑完的人才算数。',
+  '把今天该做的做完，明天自然会轻一些。',
+  '重复不是笨办法，重复是把知识变成自己的唯一办法。',
+  '你不是记不住，你只是还没有背够遍数。',
+  '遗忘曲线不是来责怪你的，它是来提醒你：该复习了。',
+  '你觉得枯燥的这一刻，正在悄悄拉开你和别人的距离。',
+  '今天能坐下来，就已经赢过很多个昨天的自己。',
+  '一道题反复错，说明它在教你，而不是在为难你。',
+  '长期主义的意思是：允许自己慢，但从不停止。',
+  '把不确定的未来，拆成今天可以完成的一小段。',
+  '你的对手不在自习室，你的对手是昨天那个想放弃的自己。',
+  '真的不用每一天都热血，稳定比热血更靠得住。',
+  '现在背的每一个名词解释，都是你未来的底气。',
+  '焦虑大多来自想得太远、做得太少。那就先做眼前这 25 分钟。',
+  '别人凌晨的灯光不必和你比较，你只需要守住自己的节奏。',
+  '一遍不会就两遍，两遍不会就四遍，记忆就是这么长出来的。',
+  '你可以累，可以难过，但别把今天的进度全部否掉。',
+  '读书这件事，最公平的地方是：付出多少，它记得多少。',
+  '考研不是证明你有多厉害，而是让你变得更厉害一点。',
+  '今天多背了二十个单词，明年就会多二十个选择。',
+  '与其担心来不及，不如把今天的一小时用满。',
+  '会的东西越来越多，慌的感觉就越来越少。',
+  '把纸笔摊开的那一刻，你已经在往前走了。',
+  '所有的笨功夫，最后都会变成你的基本功。',
+  '如果今天只完成了计划的六成，那也很好，六成也是前进。',
+  '给自己的努力一点耐心，它需要时间发芽。',
+  '别急着看结果，先把今天的这一段路走扎实。',
+  '你正在做的事，可能很难，但它很值得。',
+  '坚持下去的人不多，所以你坚持下去就很重要。'
+];
+
+/* ---------- 每日小事：36 件，按日期固定 ---------- */
+const MICRO_TASKS = [
+  '散步 10 分钟，什么也不想',
+  '看看学校里的小猫',
+  '晒 5 分钟太阳',
+  '认真吃一顿饭，不看手机',
+  '给家人或朋友发一句感谢',
+  '听一首喜欢的歌',
+  '整理桌面 5 分钟',
+  '喝一杯温水',
+  '做 5 分钟拉伸',
+  '拍一张天空',
+  '写下三件小确幸',
+  '走一条没走过的小路',
+  '闭眼深呼吸 1 分钟',
+  '夸自己一句',
+  '把手机放远 10 分钟',
+  '看一次夕阳',
+  '摸一摸树叶',
+  '早睡 10 分钟',
+  '换掉桌上枯萎的花，插一枝新的',
+  '把书包里的废纸清一清',
+  '给自己泡一杯热茶',
+  '听一段纯音乐，什么都不做',
+  '把明天要背的资料提前摊在桌上',
+  '和室友说一句“早点休息”',
+  '洗个热水澡，把疲惫冲掉',
+  '给窗台擦擦灰',
+  '抬头看一会儿月亮',
+  '给久没联系的朋友发个表情包',
+  '出门前认真涂点护手霜',
+  '把今天最开心的一件小事记下来',
+  '在纸上写一句鼓励自己的话，贴在书桌前',
+  '走路时把肩膀放松放下来',
+  '吃一种今天特别想吃的东西',
+  '把水杯灌满，放在手边',
+  '睡前把手机充上电放在远离床头的地方',
+  '给今天的自己留 10 分钟，什么都不必完成'
+];
+
+/* ---------- 天气码 → 中文 + 表情 ---------- */
+const WEATHER_CODES = {
+  0: ['晴', '☀️'], 1: ['大致晴朗', '🌤️'], 2: ['多云', '⛅'], 3: ['阴', '☁️'],
+  45: ['有雾', '🌫️'], 48: ['雾凇', '🌫️'],
+  51: ['毛毛雨', '🌦️'], 53: ['毛毛雨', '🌦️'], 55: ['毛毛雨', '🌦️'],
+  56: ['冻毛毛雨', '🌧️'], 57: ['冻毛毛雨', '🌧️'],
+  61: ['小雨', '🌦️'], 63: ['中雨', '🌧️'], 65: ['大雨', '🌧️'],
+  66: ['冻雨', '🌧️'], 67: ['冻雨', '🌧️'],
+  71: ['小雪', '🌨️'], 73: ['中雪', '🌨️'], 75: ['大雪', '❄️'], 77: ['雪粒', '🌨️'],
+  80: ['阵雨', '🌦️'], 81: ['强阵雨', '🌧️'], 82: ['暴雨', '⛈️'],
+  85: ['阵雪', '🌨️'], 86: ['强阵雪', '❄️'],
+  95: ['雷阵雨', '⛈️'], 96: ['雷阵雨伴冰雹', '⛈️'], 99: ['雷阵雨伴冰雹', '⛈️']
+};
+function weatherCN(code) {
+  return WEATHER_CODES[code] || ['天气未知', '🌡️'];
+}
+
+/* =====================================================================
+   2. 离线陪伴话术库（共 73 条，按情绪/关键词分类）
+      夸夸 18 + 安慰 20 + 鼓励 16 + 默认 14 + 危机 5
+   ===================================================================== */
+const REPLIES = {
+  praise: [
+    '真棒，阅读能做好说明你的语感和耐心都在线，继续保持这个节奏。',
+    '这条值得记一下：今天你把该做的做完了，不是运气，是你的稳定。',
+    '嗯，今天确实做得不错。能坚持到这个程度，说明你在认真对待自己。',
+    '太好了。你看，计划不是用来吓人的，是用来一条条划掉的。',
+    '进步是藏不住的，你自己最清楚今天和上个月的区别。',
+    '顺利的时候也要夸自己一句，这是给下一次攒力气。',
+    '全对的感觉真好。记住这个感觉，它是你练出来的。',
+    '今天的高分不是偶然，前面那些枯燥的重复都在给你垫底。',
+    '你完成得比你以为的多，只是你习惯性忽略了自己做到的部分。',
+    '做得好，我说真的。别急着说“还不够”，先收下这句肯定。',
+    '坚持住了就是本事，多的是人在第三天就走了。',
+    '你看，状态好的时候一小时能顶别人三小时，这叫积累开始生效了。',
+    '记得牢说明方法对了，接下来把它复制到别的科目上就好。',
+    '不错，今天这份状态可以写进你的“我能行”的记录里。',
+    '完成的那一刻，你已经在往前挪了。给自己倒杯水，坐一会儿。',
+    '稳稳当当又一天，这种日子攒起来就是底气。',
+    '厉害的不是今天做得多好，是你没停下来。',
+    '今天的你值得一句：很好，继续保持这个节奏。'
+  ],
+  comfort: [
+    '先别急，没完成的事不会因为你今晚焦虑就变少，先让自己坐下来喘口气。',
+    '累是真的累，不是你不努力。先喝口水，把肩膀放松下来。',
+    '“来不及”这个念头很折磨人，但大多数时候它只是吓人的，不是真的。',
+    '别跟自己较劲了。今天能做的先做，做不到的留给明天。',
+    '焦虑不是你不行，是你太在意了。在意是好事，只是别让它把你按住。',
+    '难受就难受一会儿，不用马上振作，人不是机器。',
+    '我听见了，这份压力确实不轻。我们把它拆小一点，先看明天第一件事。',
+    '没做完就没做完，计划本来就是用来调整的，不是用来审判你的。',
+    '你已经撑了很久了。今晚早点睡，明天的你会比今天有力气。',
+    '想哭就哭一会儿，哭完洗把脸，人还在，就都还有机会。',
+    '慌的时候深呼吸三次：从鼻子吸、慢慢从嘴呼，先让身体安静下来。',
+    '别把今天的不顺利，拿去否定你这几个月的努力。',
+    '“崩溃”这个词太重了，你只是到临界点了，需要歇一歇。',
+    '压力大说明你在乎，但你不必用伤害自己的方式去在乎。',
+    '睡不着就先别躺着数羊，起来看两页轻松的，困了再回床上。',
+    '委屈是真的委屈，不用假装没事。说出来就已经好一点了。',
+    '心情不好也没关系，今天可以只完成最低限度，及格就好。',
+    '你不是一个人在扛，很多人这个阶段都这样，只是没人说出口。',
+    '先照顾人，再照顾进度。人垮了，进度也留不住。',
+    '慢慢来。今天先到这里，剩下的交给明天的你。'
+  ],
+  encourage: [
+    '你会走过去的。可能比你想的慢，但一定会到。',
+    '迷茫的时候不用想太远，把今天这道题做完就够。',
+    '不想学也可以先坐下来，坐下五分钟，通常就顺势学下去了。',
+    '想放弃的念头会来，也会走。它会来，不代表你要听它的。',
+    '你问来得及吗——只要现在开始动手，答案就是来得及。',
+    '动力不是等来的，是做出来的。先动十分钟，动力跟着来。',
+    '别怕走得慢，只怕停下来就不走了。',
+    '你需要的不是更狠的计划，是一个能坚持下去的节奏。',
+    '“加油”这句话很轻，但我是认真的：你可以的。',
+    '现在的路窄，是因为你在往上走。',
+    '方向不清楚就先走一步，走着走着路就显出来了。',
+    '力量不是一天攒出来的，是每天做完一点点攒出来的。',
+    '撑住。你已经比很多放弃的人走得更远了。',
+    '每一次“想放弃又没放弃”，都在给你多加一层底气。',
+    '大多数事都是熬出来的，你已经熬过最难的开头了。',
+    '相信自己的意思，就是允许自己慢慢变强。'
+  ],
+  general: [
+    '嗯，我在听。想说什么都可以。',
+    '谢谢你愿意跟我讲这些。',
+    '今天过得怎么样？哪怕只是一两件小事，也可以说给我听。',
+    '我在的，慢慢说。',
+    '这样啊。那你现在最想先做什么？',
+    '听起来是有故事的一天，愿意多讲一点吗？',
+    '嗯嗯，继续。',
+    '我记住了。你现在感觉好一点了吗？',
+    '无论今天完成多少，你都在往前走。',
+    '有想说的话就说，不用组织语言。',
+    '好，那我们就从手边这件小事开始。',
+    '我陪着你，不用一个人扛。',
+    '有时候说出来，就已经解决一半了。',
+    '嗯，你说，我听着呢。'
+  ],
+  /* 严重负面情绪：温和建议联系信任的人 / 学校心理中心 / 专业帮助，不做任何诊断 */
+  crisis: [
+    '听到你这样说，我很在意你。你现在的感受一定很难熬，但请先别一个人待着——能不能马上去找一个你信任的人，同学、家人、老师都可以，陪你说说话？学校一般都有心理中心，那里有专业的人可以帮你，去找他们不是软弱，是很勇敢的事。如果情况紧急，请立即拨打 120 或 110，全国心理援助热线是 12356。我还在，但你需要更专业、离你更近的人在身边。',
+    '谢谢你愿意把这句话说出来。这样的痛苦不该由你一个人承担。现在就联系一个你信任的人吧，或者去学校的心理中心聊聊，他们有能力接住你。如果情况紧急，请打 120 或 110，全国心理援助热线是 12356。我在，但请让身边的人也靠近你。',
+    '我没办法替你把这份难受拿走，但我很希望你现在不要一个人扛。找一个信任的人说说，或者联系学校心理中心、拨打心理援助热线 12356。你值得被好好接住。',
+    '你现在的处境听起来非常难。请把安全放在第一位：找一个你信任的人陪着，联系学校的心理老师，或者拨打 12356 / 110。这不是麻烦别人，这是你现在最该做的事。',
+    '我听见了，也真的在意你。请先做一件事：找一个你信任的人，把你的感受告诉他，或者联系学校心理中心、拨打心理援助热线 12356。你不需要一个人待在这样的时刻里。'
+  ]
+};
+
+/* ---------- 关键词分类表 ---------- */
+const KEYWORDS = {
+  crisis: ['不想活', '活着没意思', '活不下去', '想死', '自杀', '结束生命', '没有意义活着', '轻生', '自我了断', '消失算了', '不如死', '解脱算了', '割腕', '跳楼'],
+  /* 注意：安慰类先于夸夸类判断，“没完成”不会被“完成”误判 */
+  comfort: ['焦虑', '没完成', '没做完', '没过完', '难过', '好累', '很累', '太累', '累死', '崩溃', '来不及', '害怕', '压力', '好慌', '想哭', '睡不着', '好烦', '难受', '撑不住', '心情不好', '沮丧', '低落', '委屈', '提不起劲', '不想动', '崩了', '想放弃'],
+  praise: ['做得好', '做得很好', '做好了', '完成了', '做完了', '全对', '对了', '进步', '高分', '顺利', '坚持住', '坚持下来', '记住了', '背完了', '效率高', '很棒', '不错', '有进步', '搞定', '拿下了', '超额'],
+  encourage: ['鼓励', '力量', '加油', '迷茫', '不想学', '坚持不下去', '没动力', '怎么办', '来得及吗', '有用吗', '方向', '很迷茫']
+};
+
+/* ---------- 最近回复记忆：避免连续重复同一条 ---------- */
+const replyMemory = { recent: [] };
+function chooseReply(list) {
+  if (!list || !list.length) return '我在的，慢慢说。';
+  let pool = list.filter(function (r) { return replyMemory.recent.indexOf(r) === -1; });
+  if (!pool.length) { replyMemory.recent = []; pool = list.slice(); }
+  const r = pool[Math.floor(Math.random() * pool.length)];
+  replyMemory.recent.push(r);
+  if (replyMemory.recent.length > 8) replyMemory.recent.shift();
+  return r;
+}
+function matchesAny(text, words) {
+  for (let i = 0; i < words.length; i++) { if (text.indexOf(words[i]) !== -1) return words[i]; }
+  return null;
+}
+/* 用真实数据生成“复盘今天”的回复，避免空泛 */
+function buildReviewReply() {
+  const t = todayStr();
+  const items = state.items || [];
+  const dueList = items.filter(function (it) { return !it.mastered && it.nextReviewAt && it.nextReviewAt <= t; });
+  const dueLeft = dueList.length;
+  const pending = items.filter(function (it) { return !it.mastered; }).length;
+  const mastered = items.filter(function (it) { return it.mastered; }).length;
+  const memos = state.memos || [];
+  const todayMemo = memos.filter(function (m) { return !m.done && m.dueDate === t; });
+  const overMemo = memos.filter(function (m) { return !m.done && m.dueDate && m.dueDate < t; });
+  const doneMemoToday = memos.filter(function (m) { return m.done && m.completedAt && String(m.completedAt).slice(0, 10) === t; });
+  const reviewedToday = items.reduce(function (n, it) {
+    return n + (it.history || []).filter(function (h) { return h.reviewedAt === t; }).length;
+  }, 0);
+
+  if (!items.length && !memos.length) {
+    return '今天我们还没记下什么，不着急。要不先随手记一条今天学过的内容，或者写一条明天要做的小事？有一点记录，心里就会踏实一点。';
+  }
+  const parts = [];
+  parts.push('来复盘一下今天：');
+  parts.push('· 今天已经完成 ' + reviewedToday + ' 次复习，还有 ' + dueLeft + ' 条排着队。');
+  if (doneMemoToday.length) parts.push('· 备忘完成了 ' + doneMemoToday.length + ' 条，这些小事也算数。');
+  if (todayMemo.length) parts.push('· 今天还有 ' + todayMemo.length + ' 条备忘停在手边。');
+  if (overMemo.length) parts.push('· 有 ' + overMemo.length + ' 条备忘过了日期还没做完，能补就补，补不上就挪个日子。');
+  parts.push('· 还没有掌握的有 ' + pending + ' 条，已经掌握 ' + mastered + ' 条——掌握的这一栏，是你一点点攒出来的。');
+  let tail = '不用每一栏都好看，今天有在动，就够了。';
+  if (dueLeft === 0 && !todayMemo.length && !overMemo.length) tail = '今天的任务基本都落定了，去洗个热水澡，好好休息。';
+  else if (overMemo.length || dueLeft > 8) tail = '事情有点多，先挑最轻的一件开始，做完一件，心里就松一格。';
+  parts.push(tail);
+  return parts.join('\n');
+}
+/* 离线模式主入口：返回一条回复文本 */
+function offlineReply(userText) {
+  const text = String(userText || '').trim();
+  const low = text.toLowerCase();
+
+  /* 1) 严重负面情绪优先，且不做普通安慰 */
+  if (matchesAny(text, KEYWORDS.crisis)) return chooseReply(REPLIES.crisis);
+
+  /* 2) 特例：复盘今天 */
+  if (/复盘|总结一下今天|总结今天|今天怎么样/.test(text)) return buildReviewReply();
+
+  /* 3) 特例：要一句鼓励 / 一句有力量的话 */
+  if (/一句鼓励|鼓励的话|有力量的话|说句好听的|一句话/.test(text)) {
+    return '“' + QUOTES[dailyIndex(QUOTES.length, 'chatEncourage_' + Math.floor(Date.now() / 60000))] + '”\n—— 这是今天想送给你的话。';
+  }
+
+  /* 4) 关键词分类 */
+  if (matchesAny(text, KEYWORDS.comfort)) {
+    const base = chooseReply(REPLIES.comfort);
+    return base;
+  }
+  if (matchesAny(text, KEYWORDS.praise)) {
+    const base = chooseReply(REPLIES.praise);
+    return base;
+  }
+  if (matchesAny(text, KEYWORDS.encourage)) {
+    return chooseReply(REPLIES.encourage);
+  }
+  /* 5) 兜底：轻微寒暄也带一点温度 */
+  if (/^(在吗|在不在|你好|hi|hello|\?|？)$/i.test(text)) return '在的，我一直都在。今天过得还好吗？';
+  if (low.indexOf('谢谢') === 0 || text.indexOf('谢谢') !== -1) return '不用谢。你肯坚持，这件事本身就值得被善待。';
+  return chooseReply(REPLIES.general);
+}
+
+/* =====================================================================
+   3. 数据层：单 key 存储 beishu_app_v1
+      根节点：{version, items[], memos[], chat{messages,settings}, daily, settings}
+   ===================================================================== */
+let state = null;
+let storageWarned = false;
+
+function defaultData() {
+  return {
+    version: 1,
+    items: [],
+    memos: [],
+    chat: {
+      messages: [],
+      settings: {
+        mode: 'offline',
+        apiBase: DEFAULT_API_BASE,
+        apiKey: '',
+        model: DEFAULT_MODEL,
+        systemPrompt: DEFAULT_SYSTEM_PROMPT
+      }
+    },
+    daily: {},
+    settings: {
+      reviewIntervals: DEFAULT_INTERVALS.slice(),
+      masteredDays: DEFAULT_MASTERED_DAYS,
+      weatherEnabled: true
+    }
+  };
+}
+
+/* 容忍式归一化：老数据 / 手改数据 / 导入数据都尽量能跑起来 */
+function normalizeItem(raw) {
+  if (!raw || typeof raw !== 'object') return null;
+  const learnedAt = parseDateStr(raw.learnedAt) ? String(raw.learnedAt).slice(0, 10) : todayStr();
+  const item = {
+    id: raw.id ? String(raw.id) : uid('item'),
+    subject: String(raw.subject || '未分类'),
+    chapter: String(raw.chapter || ''),
+    title: String(raw.title || ''),
+    question: String(raw.question || ''),
+    answer: String(raw.answer || ''),
+    importance: ['高', '中', '低'].indexOf(raw.importance) >= 0 ? raw.importance : '中',
+    learnedAt: learnedAt,
+    stageIndex: clampNum(raw.stageIndex, 0, 99, 0),
+    nextReviewAt: parseDateStr(raw.nextReviewAt) ? String(raw.nextReviewAt).slice(0, 10) : addDaysStr(learnedAt, 1),
+    mastered: !!raw.mastered,
+    history: Array.isArray(raw.history) ? raw.history.map(function (h) {
+      return {
+        reviewedAt: String((h && h.reviewedAt) || '').slice(0, 10),
+        rating: ['记得', '模糊', '忘记'].indexOf(h && h.rating) >= 0 ? h.rating : '记得',
+        prevStage: clampNum(h && h.prevStage, 0, 99, 0),
+        nextStage: clampNum(h && h.nextStage, 0, 99, 0)
+      };
+    }) : []
+  };
+  if (!item.answer && !item.question && !item.title) return null; // 空壳条目丢弃
+  return item;
+}
+
+function normalizeMemo(raw) {
+  if (!raw || typeof raw !== 'object') return null;
+  const content = String(raw.content || '').trim();
+  if (!content) return null;
+  const dueDate = parseDateStr(raw.dueDate) ? String(raw.dueDate).slice(0, 10) : (raw.dueDate === null || raw.dueDate === '' ? null : null);
+  return {
+    id: raw.id ? String(raw.id) : uid('memo'),
+    content: content,
+    note: String(raw.note || ''),
+    type: MEMO_TYPES.indexOf(raw.type) >= 0 ? raw.type : '待办',
+    priority: MEMO_PRIORITIES.indexOf(raw.priority) >= 0 ? raw.priority : '中',
+    tags: Array.isArray(raw.tags) ? raw.tags.map(function (t) { return String(t).trim(); }).filter(Boolean) : [],
+    dueDate: dueDate,
+    dueTime: /^\d{2}:\d{2}$/.test(String(raw.dueTime || '')) ? raw.dueTime : '',
+    repeat: MEMO_REPEATS.indexOf(raw.repeat) >= 0 ? raw.repeat : '不重复',
+    done: !!raw.done,
+    pinned: !!raw.pinned,
+    createdAt: raw.createdAt ? String(raw.createdAt) : nowISO(),
+    updatedAt: raw.updatedAt ? String(raw.updatedAt) : (raw.createdAt ? String(raw.createdAt) : nowISO()),
+    completedAt: raw.completedAt ? String(raw.completedAt) : null,
+    lastNotifiedDate: raw.lastNotifiedDate ? String(raw.lastNotifiedDate).slice(0, 10) : null
+  };
+}
+
+function normalizeMessage(raw) {
+  if (!raw || typeof raw !== 'object') return null;
+  const content = String(raw.content || '');
+  if (!content) return null;
+  return {
+    id: raw.id ? String(raw.id) : uid('msg'),
+    role: raw.role === 'assistant' ? 'assistant' : 'user',
+    content: content,
+    time: raw.time ? String(raw.time) : nowISO()
+  };
+}
+
+function normalizeData(raw) {
+  const d = defaultData();
+  if (!raw || typeof raw !== 'object') return d;
+  if (Array.isArray(raw.items)) d.items = raw.items.map(normalizeItem).filter(Boolean);
+  if (Array.isArray(raw.memos)) d.memos = raw.memos.map(normalizeMemo).filter(Boolean);
+  if (raw.chat && typeof raw.chat === 'object') {
+    if (Array.isArray(raw.chat.messages)) d.chat.messages = raw.chat.messages.map(normalizeMessage).filter(Boolean).slice(-MAX_CHAT_MESSAGES);
+    const cs = raw.chat.settings || {};
+    d.chat.settings = {
+      mode: cs.mode === 'online' ? 'online' : 'offline',
+      apiBase: String(cs.apiBase || DEFAULT_API_BASE),
+      apiKey: String(cs.apiKey || ''),
+      model: String(cs.model || DEFAULT_MODEL),
+      systemPrompt: String(cs.systemPrompt || DEFAULT_SYSTEM_PROMPT)
+    };
+  }
+  if (raw.daily && typeof raw.daily === 'object' && !Array.isArray(raw.daily)) d.daily = raw.daily;
+  if (raw.settings && typeof raw.settings === 'object') {
+    const iv = Array.isArray(raw.settings.reviewIntervals) && raw.settings.reviewIntervals.length
+      ? raw.settings.reviewIntervals.map(function (n) { return clampNum(n, 1, 365, 1); })
+      : DEFAULT_INTERVALS.slice();
+    d.settings.reviewIntervals = iv;
+    d.settings.masteredDays = clampNum(raw.settings.masteredDays, 1, 365, DEFAULT_MASTERED_DAYS);
+    d.settings.weatherEnabled = raw.settings.weatherEnabled !== false;
+  }
+  d.version = 1;
+  return d;
+}
+
+function loadState() {
+  let raw = null;
+  try {
+    const txt = localStorage.getItem(STORAGE_KEY);
+    if (txt) raw = JSON.parse(txt);
+  } catch (e) {
+    console.warn('读取本地数据失败：', e);
+    toast('本地数据读取出了一点问题，已用空数据启动（原数据没有被覆盖，导出前请留意）。');
+  }
+  state = normalizeData(raw);
+  /* 确保今天的 daily 记录存在：每日一句 / 每日小事同一天固定 */
+  ensureTodayDaily();
+  saveState();
+  return state;
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    return true;
+  } catch (e) {
+    console.warn('保存失败：', e);
+    if (!storageWarned) {
+      storageWarned = true;
+      toast('保存失败了，可能是浏览器隐私模式或空间不足，先导出一份备份更稳妥。');
+    }
+    return false;
+  }
+}
+
+/* 今天的每日内容（同一天刷新不变，第二天自动换新） */
+function ensureTodayDaily() {
+  const t = todayStr();
+  if (!state.daily[t] || typeof state.daily[t] !== 'object') {
+    state.daily[t] = { quoteIndex: -1, microTaskIndex: -1, microTaskDone: false };
+  }
+  const rec = state.daily[t];
+  if (typeof rec.quoteIndex !== 'number' || rec.quoteIndex < 0 || rec.quoteIndex >= QUOTES.length) {
+    rec.quoteIndex = dailyIndex(QUOTES.length, 'quote');
+  }
+  if (typeof rec.microTaskIndex !== 'number' || rec.microTaskIndex < 0 || rec.microTaskIndex >= MICRO_TASKS.length) {
+    rec.microTaskIndex = dailyIndex(MICRO_TASKS.length, 'micro');
+  }
+  rec.microTaskDone = !!rec.microTaskDone;
+  /* 只保留最近 60 天，避免无限膨胀 */
+  const keys = Object.keys(state.daily).sort();
+  while (keys.length > 60) { delete state.daily[keys.shift()]; }
+  return rec;
+}
+function todayDaily() { return ensureTodayDaily(); }
+
+/* ---------- 查找与统计 ---------- */
+function dueItems(dateStr) {
+  const t = dateStr || todayStr();
+  return (state.items || []).filter(function (it) {
+    return it.nextReviewAt && it.nextReviewAt <= t;
+  });
+}
+function subjectList() {
+  const set = [];
+  (state.items || []).forEach(function (it) { if (set.indexOf(it.subject) === -1) set.push(it.subject); });
+  return set.sort();
+}
+function tagList() {
+  const set = [];
+  (state.memos || []).forEach(function (m) {
+    (m.tags || []).forEach(function (t) { if (set.indexOf(t) === -1) set.push(t); });
+  });
+  return set.sort();
+}
+function memoCounts() {
+  const t = todayStr();
+  const memos = state.memos || [];
+  let today = 0, over = 0, open = 0, done = 0;
+  memos.forEach(function (m) {
+    if (m.done) { done++; return; }
+    open++;
+    if (!m.dueDate) return;
+    if (m.dueDate < t) over++;
+    else if (m.dueDate === t) today++;
+  });
+  return { today: today, over: over, open: open, done: done, all: memos.length };
+}
+
+/* =====================================================================
+   4. 界面基础：提示条 / 确认框 / 导航切换 / 时钟 / 天气 / 首页
+   ===================================================================== */
+
+/* ---------- 轻提示 ---------- */
+let toastTimer = null;
+function toast(msg, ms) {
+  const wrap = $('#toastWrap');
+  if (!wrap) return;
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(function () { el.remove(); }, ms || 2800);
+}
+
+/* ---------- 通用确认框（Promise 版） ---------- */
+function confirmDialog(title, text, yesLabel) {
+  return new Promise(function (resolve) {
+    const modal = $('#confirmModal');
+    $('#confirmTitle').textContent = title || '确认';
+    $('#confirmText').textContent = text || '';
+    $('#btnConfirmYes').textContent = yesLabel || '确定';
+    modal.classList.remove('hidden');
+    function done(val) {
+      modal.classList.add('hidden');
+      $('#btnConfirmYes').removeEventListener('click', onYes);
+      $('#btnConfirmNo').removeEventListener('click', onNo);
+      resolve(val);
+    }
+    function onYes() { done(true); }
+    function onNo() { done(false); }
+    $('#btnConfirmYes').addEventListener('click', onYes);
+    $('#btnConfirmNo').addEventListener('click', onNo);
+  });
+}
+
+/* ---------- 导航切换 ---------- */
+const TAB_IDS = ['home', 'review', 'input', 'quiz', 'all', 'memo', 'chat', 'settings'];
+function switchTab(name) {
+  if (TAB_IDS.indexOf(name) === -1) name = 'home';
+  $$('.navbtn').forEach(function (b) { b.classList.toggle('active', b.dataset.tab === name); });
+  TAB_IDS.forEach(function (t) {
+    const el = document.getElementById('tab-' + t);
+    if (el) el.classList.toggle('hidden', t !== name);
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (name === 'chat') { renderChat(); setTimeout(scrollChatBottom, 60); }
+}
+
+/* ---------- 时钟：HH:MM:SS，每秒更新，本地时区 ---------- */
+function tickClock() {
+  const d = new Date();
+  $('#clockTime').textContent = pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ':' + pad2(d.getSeconds());
+  $('#clockDate').textContent = d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + weekdayCN(d);
+}
+function startClock() {
+  tickClock();
+  setInterval(tickClock, 1000);
+}
+
+/* ---------- 北京天气（Open-Meteo，免费无 key） ---------- */
+let weatherTimer = null;
+async function loadWeather(manual) {
+  const line = $('#weatherLine');
+  if (!state.settings.weatherEnabled) {
+    line.innerHTML = '<span class="weather-loading">北京天气已在设置里关闭</span>';
+    return;
+  }
+  line.innerHTML = '<span class="weather-loading">正在看看北京今天怎么样…</span>';
+  const url = 'https://api.open-meteo.com/v1/forecast?latitude=39.9042&longitude=116.4074'
+    + '&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m'
+    + '&daily=weather_code,temperature_2m_max,temperature_2m_min'
+    + '&timezone=Asia%2FShanghai&forecast_days=1';
+  const ctrl = new AbortController();
+  const timer = setTimeout(function () { ctrl.abort(); }, 9000);
+  try {
+    const res = await fetch(url, { signal: ctrl.signal, cache: 'no-store' });
+    clearTimeout(timer);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    renderWeather(data);
+  } catch (e) {
+    clearTimeout(timer);
+    console.warn('天气获取失败：', e);
+    line.innerHTML = '<span class="weather-loading">北京天气暂时获取失败</span>'
+      + '<span class="sep">·</span><button class="btn tiny ghost" id="btnWeatherRetry">重试</button>';
+    const rb = $('#btnWeatherRetry');
+    if (rb) rb.addEventListener('click', function () { loadWeather(true); });
+  }
+  if (manual) toast('天气已刷新');
+}
+function renderWeather(data) {
+  const line = $('#weatherLine');
+  const cur = data && data.current, daily = data && data.daily;
+  if (!cur) { line.innerHTML = '<span class="weather-loading">北京天气暂时获取失败</span>'; return; }
+  const w = weatherCN(cur.weather_code);
+  const parts = [];
+  parts.push(w[1] + ' 北京 ' + Math.round(cur.temperature_2m) + '°C');
+  parts.push(w[0]);
+  parts.push('体感 ' + Math.round(cur.apparent_temperature) + '°C');
+  parts.push('湿度 ' + Math.round(cur.relative_humidity_2m) + '%');
+  parts.push('风速 ' + Math.round(cur.wind_speed_10m) + ' km/h');
+  if (daily && daily.temperature_2m_max && daily.temperature_2m_max.length) {
+    parts.push('今日 ' + Math.round(daily.temperature_2m_min[0]) + '~' + Math.round(daily.temperature_2m_max[0]) + '°C');
+  }
+  line.innerHTML = parts.map(function (p, i) {
+    return i === 0 ? '<span style="color:var(--ink)">' + escapeHtml(p) + '</span>' : escapeHtml(p);
+  }).join('<span class="sep">·</span>')
+    + '<span class="sep">·</span><button class="btn tiny ghost" id="btnWeatherRetry">刷新</button>';
+  const rb = $('#btnWeatherRetry');
+  if (rb) rb.addEventListener('click', function () { loadWeather(true); });
+}
+function startWeather() {
+  loadWeather(false);
+  if (weatherTimer) clearInterval(weatherTimer);
+  weatherTimer = setInterval(function () { loadWeather(false); }, 30 * 60 * 1000); // 每 30 分钟
+}
+
+/* ---------- 首页 ---------- */
+function greetingText(h) {
+  if (h < 5) return '夜深了';
+  if (h < 11) return '早上好呀';
+  if (h < 14) return '中午好';
+  if (h < 18) return '下午好';
+  if (h < 23) return '晚上好';
+  return '夜深了';
+}
+function renderHome() {
+  const t = todayStr();
+  const due = dueItems(t).length;
+  const mc = memoCounts();
+  $('#homeDue').textContent = due;
+  $('#homeMemoToday').textContent = mc.today;
+  $('#homeMemoOver').textContent = mc.over;
+  $('#homeTotal').textContent = state.items.length;
+
+  const h = new Date().getHours();
+  $('#greeting').textContent = greetingText(h) + '，' + '今天也在这里';
+  const tips = [];
+  if (due === 0) tips.push('今天没有到期复习，可以自由安排');
+  else tips.push('今天有 ' + due + ' 条等着复习');
+  if (mc.today) tips.push('备忘 ' + mc.today + ' 条今天到期');
+  if (mc.over) tips.push(mc.over + ' 条备忘已逾期');
+  $('#greetingSub').textContent = tips.join(' · ');
+
+  renderMemoBrief();
+}
+/* 今日备忘提示（温和，不吓人） */
+function renderMemoBrief() {
+  const t = todayStr();
+  const memos = state.memos || [];
+  const todayList = memos.filter(function (m) { return !m.done && m.dueDate === t; });
+  const overList = memos.filter(function (m) { return !m.done && m.dueDate && m.dueDate < t; });
+  const box = $('#memoBriefBody');
+  const lines = [];
+  if (!todayList.length && !overList.length) {
+    lines.push(memos.length ? '今天没有到期的备忘，轻轻松松。' : '还没有备忘。想记什么，随手写一句就行。');
+  } else {
+    if (todayList.length) lines.push('今天有 ' + todayList.length + ' 件小事记得处理。');
+    if (overList.length) lines.push('还有 ' + overList.length + ' 件是前两天留下的，能补就补，补不上挪个日子也没关系。');
+  }
+  const top = todayList.concat(overList).slice(0, 3);
+  const html = ['<div>' + lines.map(escapeHtml).join('<br>') + '</div>'];
+  if (top.length) {
+    html.push('<div style="margin-top:8px">');
+    top.forEach(function (m) {
+      const tag = m.dueDate < t ? '<span class="tag warn">' + relDayLabel(m.dueDate) + '</span>' : '<span class="tag sage">今天</span>';
+      html.push('<div style="display:flex;gap:7px;align-items:center;margin-bottom:3px">' + tag
+        + '<span>' + escapeHtml(m.content) + (m.dueTime ? ' <span class="muted">' + escapeHtml(m.dueTime) + '</span>' : '') + '</span></div>');
+    });
+    if (todayList.length + overList.length > 3) html.push('<div class="muted">…还有 ' + (todayList.length + overList.length - 3) + ' 条</div>');
+    html.push('</div>');
+  }
+  box.innerHTML = html.join('');
+  const perm = ('Notification' in window) ? Notification.permission : 'unsupported';
+  const map = { granted: '到期提醒已开启：打开网页时会检查一次。', denied: '你拒绝了浏览器通知，没关系，页面里的提示照常显示。', default: '想收到浏览器通知的话，点上面的“开启到期提醒”。', unsupported: '这个浏览器不支持通知，页面提示照常显示，不影响使用。' };
+  $('#notifyState').textContent = map[perm] || '';
+  const el2 = $('#notifyState2');
+  if (el2) el2.textContent = map[perm] || '';
+}
+
+/* ---------- 每日一句 ---------- */
+function renderQuote() {
+  const rec = todayDaily();
+  const q = QUOTES[rec.quoteIndex] || QUOTES[0];
+  $('#quoteText').textContent = q;
+  $('#quoteDateLabel').textContent = dateLabelCN(todayStr()).slice(5);
+}
+
+/* ---------- 每日小事 ---------- */
+function renderMicro() {
+  const rec = todayDaily();
+  const name = MICRO_TASKS[rec.microTaskIndex] || MICRO_TASKS[0];
+  $('#microText').textContent = name;
+  const box = $('#microBox');
+  box.classList.toggle('done', rec.microTaskDone);
+  $('#btnMicroDone').textContent = rec.microTaskDone ? '已完成' : '完成';
+  $('#btnMicroDone').disabled = !!rec.microTaskDone;
+  $('#microTip').textContent = rec.microTaskDone
+    ? '今日小确幸已拾取。做不做得到完美不重要，你注意到了生活就好。'
+    : '做完点一下就好，只对今天有效，明天会自动换一件新的。';
+}
+function onMicroDone() {
+  const rec = todayDaily();
+  if (rec.microTaskDone) return;
+  rec.microTaskDone = true;
+  saveState();
+  renderMicro();
+  toast('今日小确幸已拾取。');
+}
+
+/* =====================================================================
+   5. 背诵条目：录入 / 批量 / 编辑 / 删除 / 搜索 / 复习
+   ===================================================================== */
+let editingItemId = null;
+
+function intervals() { return (state.settings.reviewIntervals && state.settings.reviewIntervals.length) ? state.settings.reviewIntervals : DEFAULT_INTERVALS; }
+function stageLabel(it) {
+  const iv = intervals();
+  if (it.mastered) return '已掌握 · ' + (it.stageIndex >= iv.length ? '巩固中' : '');
+  return '第 ' + Math.min(it.stageIndex + 1, iv.length) + '/' + iv.length + ' 阶段';
+}
+function createItem(o) {
+  const learnedAt = o.learnedAt || todayStr();
+  const iv = intervals();
+  const item = {
+    id: uid('item'),
+    subject: o.subject || '未分类',
+    chapter: o.chapter || '',
+    title: o.title || '',
+    question: o.question || '',
+    answer: o.answer || '',
+    importance: o.importance || '中',
+    learnedAt: learnedAt,
+    stageIndex: 0,
+    nextReviewAt: addDaysStr(learnedAt, iv[0]),
+    mastered: false,
+    history: []
+  };
+  state.items.push(item);
+  return item;
+}
+
+/* ---------- 单条保存 ---------- */
+function saveItemForm() {
+  const subject = $('#inSubject').value.trim();
+  const answer = $('#inAnswer').value.trim();
+  const question = $('#inQuestion').value.trim();
+  const title = $('#inTitle').value.trim();
+  if (!subject) { toast('科目先填一下吧。'); $('#inSubject').focus(); return; }
+  if (!answer && !question) { toast('问题和答案，至少写一个。'); $('#inAnswer').focus(); return; }
+  const payload = {
+    subject: subject,
+    chapter: $('#inChapter').value.trim(),
+    title: title,
+    question: question,
+    answer: answer,
+    importance: $('#inImportance').value,
+    learnedAt: $('#inLearnedAt').value || todayStr()
+  };
+  if (editingItemId) {
+    const it = state.items.find(function (x) { return x.id === editingItemId; });
+    if (it) {
+      Object.keys(payload).forEach(function (k) { it[k] = payload[k]; });
+      toast('已更新，复习计划保持原样。');
+    }
+    exitEditMode();
+  } else {
+    createItem(payload);
+    toast('已保存，明天开始提醒你复习。');
+  }
+  saveState();
+  clearItemForm();
+  refreshAll();
+}
+
+function clearItemForm() {
+  ['#inTitle', '#inQuestion', '#inAnswer'].forEach(function (s) { $(s).value = ''; });
+  $('#inChapter').value = '';
+  $('#inLearnedAt').value = todayStr();
+  $('#saveHint').textContent = '';
+}
+function enterEditMode(id) {
+  const it = state.items.find(function (x) { return x.id === id; });
+  if (!it) return;
+  editingItemId = id;
+  $('#inSubject').value = it.subject;
+  $('#inChapter').value = it.chapter;
+  $('#inTitle').value = it.title;
+  $('#inQuestion').value = it.question;
+  $('#inAnswer').value = it.answer;
+  $('#inImportance').value = it.importance;
+  $('#inLearnedAt').value = it.learnedAt;
+  $('#btnSaveItem').textContent = '保存修改';
+  $('#btnCancelEdit').classList.remove('hidden');
+  $('#saveHint').textContent = '正在编辑：《' + (it.title || it.question || it.answer.slice(0, 12)) + '》，修改不会重置复习阶段。';
+  switchTab('input');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function exitEditMode() {
+  editingItemId = null;
+  $('#btnSaveItem').textContent = '保存并生成计划';
+  const c = $('#btnCancelEdit');
+  if (c) c.classList.add('hidden');
+  $('#saveHint').textContent = '';
+}
+
+/* ---------- 批量保存：每行“科目 | 问题 | 答案” ---------- */
+function batchSave() {
+  const text = $('#batchText').value.trim();
+  if (!text) { toast('先粘贴或输入内容吧。'); return; }
+  const lines = text.split(/\r?\n/).map(function (l) { return l.trim(); }).filter(Boolean);
+  let ok = 0, bad = 0;
+  lines.forEach(function (line) {
+    const parts = line.split(/[|｜]/).map(function (p) { return p.trim(); });
+    if (parts.length < 2) { bad++; return; }
+    const subject = parts[0] || '未分类';
+    let question = '', answer = '';
+    if (parts.length === 2) { question = parts[1]; }
+    else { question = parts[1]; answer = parts.slice(2).join(' | '); }
+    if (!question && !answer) { bad++; return; }
+    createItem({
+      subject: subject,
+      chapter: $('#batchChapter').value.trim(),
+      title: '',
+      question: question,
+      answer: answer,
+      importance: $('#batchImportance').value,
+      learnedAt: $('#batchLearnedAt').value || todayStr()
+    });
+    ok++;
+  });
+  saveState();
+  $('#batchHint').textContent = '成功录入 ' + ok + ' 条' + (bad ? '，跳过 ' + bad + ' 行（格式不对，需要至少一个“|”分隔）' : '') + '。';
+  if (ok) { $('#batchText').value = ''; toast('批量录入完成，共 ' + ok + ' 条。'); }
+  else toast('没有可用的行，格式是：科目 | 问题 | 答案');
+  refreshAll();
+}
+
+/* ---------- 删除 ---------- */
+async function deleteItem(id) {
+  const it = state.items.find(function (x) { return x.id === id; });
+  if (!it) return;
+  const name = it.title || it.question || it.answer.slice(0, 15);
+  const yes = await confirmDialog('删除这条背诵？', '《' + name + '》删除后无法恢复，复习历史也会一起删掉。', '删除');
+  if (!yes) return;
+  state.items = state.items.filter(function (x) { return x.id !== id; });
+  if (editingItemId === id) exitEditMode();
+  saveState();
+  refreshAll();
+  toast('已删除。');
+}
+
+/* ---------- 复习自评：记得 / 模糊 / 忘记 ---------- */
+function applyRating(item, rating) {
+  const t = todayStr();
+  const iv = intervals();
+  const prevStage = item.stageIndex;
+  let nextStage = item.stageIndex;
+  let nextDate = t;
+  if (rating === '记得') {
+    nextStage = item.stageIndex + 1;
+    if (nextStage >= iv.length) {
+      item.mastered = true;
+      item.stageIndex = iv.length;
+      nextDate = addDaysStr(t, state.settings.masteredDays || DEFAULT_MASTERED_DAYS);
+    } else {
+      item.stageIndex = nextStage;
+      nextDate = addDaysStr(t, iv[nextStage]);
+    }
+  } else if (rating === '模糊') {
+    nextStage = item.stageIndex;
+    nextDate = addDaysStr(t, 1);   // 阶段不变，明天再看看
+  } else {
+    item.mastered = false;
+    item.stageIndex = 0;           // 忘记：重置到第一阶段
+    nextStage = 0;
+    nextDate = addDaysStr(t, 1);
+  }
+  item.nextReviewAt = nextDate;
+  item.history = item.history || [];
+  item.history.push({ reviewedAt: t, rating: rating, prevStage: prevStage, nextStage: nextStage });
+  saveState();
+}
+function rateItem(id, rating) {
+  const it = state.items.find(function (x) { return x.id === id; });
+  if (!it) return;
+  applyRating(it, rating);
+  const msg = rating === '记得' ? (it.mastered ? '这条已经掌握啦，' + (state.settings.masteredDays || 60) + ' 天后再巩固一次。' : '很好，进入下一个阶段。')
+    : rating === '模糊' ? '没关系，明天再见一次就稳了。'
+      : '忘记也很正常，明天重新来一遍。';
+  toast(msg);
+  refreshAll();
+}
+
+/* ---------- 今日复习列表 ---------- */
+function renderReview() {
+  const t = todayStr();
+  $('#reviewDateLabel').textContent = dateLabelCN(t);
+  const list = dueItems(t).slice().sort(function (a, b) {
+    if (a.nextReviewAt !== b.nextReviewAt) return a.nextReviewAt < b.nextReviewAt ? -1 : 1;
+    return a.subject.localeCompare(b.subject, 'zh');
+  });
+  const box = $('#reviewList');
+  const overdue = list.filter(function (x) { return x.nextReviewAt < t; }).length;
+  if (!list.length) {
+    $('#reviewSummary').textContent = '今天没有到期复习，可以自由安排，也可以提前复习或随机抽背。';
+    box.innerHTML = '<div class="card empty">🌿 今天没有到期复习<br>可以自由安排，也可以提前复习或随机抽背。<div style="margin-top:12px"><button class="btn primary small" data-goto="quiz">去抽背</button></div></div>';
+    return;
+  }
+  $('#reviewSummary').innerHTML = '今天需要复习 <b>' + list.length + '</b> 条'
+    + (overdue ? '，其中 <span class="due-overdue">逾期 ' + overdue + ' 条</span>（随时补上就好，不用着急）' : '')
+    + '。看完答案，给自己一个诚实的评价就行。';
+
+  const bySubject = {};
+  list.forEach(function (it) { (bySubject[it.subject] = bySubject[it.subject] || []).push(it); });
+  const html = [];
+  Object.keys(bySubject).forEach(function (sub) {
+    const arr = bySubject[sub];
+    html.push('<div class="subject-head"><span class="dot"></span><span class="name">' + escapeHtml(sub) + '</span><span class="count">' + arr.length + ' 条</span></div>');
+    arr.forEach(function (it) { html.push(renderReviewItem(it, t)); });
+  });
+  box.innerHTML = html.join('');
+  bindReviewEvents($('#reviewList'));
+}
+function renderReviewItem(it, t) {
+  const overdueDay = it.nextReviewAt < t;
+  const last = it.history && it.history.length ? it.history[it.history.length - 1] : null;
+  const meta = [];
+  meta.push('<span class="tag ' + (overdueDay ? 'warn' : 'sage') + '">' + (overdueDay ? relDayLabel(it.nextReviewAt) : '今日到期') + '</span>');
+  meta.push('<span class="tag">' + escapeHtml(stageLabel(it)) + '</span>');
+  if (it.importance === '高') meta.push('<span class="tag clay">重要</span>');
+  if (it.chapter) meta.push('<span class="tag">' + escapeHtml(it.chapter) + '</span>');
+  if (last) meta.push('<span class="tag sky">上次复习 ' + escapeHtml(last.reviewedAt) + ' · ' + escapeHtml(last.rating) + '</span>');
+  else meta.push('<span class="tag sky">还没复习过</span>');
+  meta.push('<span class="muted small">下次：' + escapeHtml(relDayLabel(it.nextReviewAt)) + '</span>');
+  const q = it.question || it.title || it.answer.slice(0, 20) || '（没有填写问题）';
+  return '<div class="item ' + (overdueDay ? 'over' : 'due') + '" data-id="' + it.id + '">'
+    + '<div class="item-q">' + escapeHtml(q) + '</div>'
+    + '<div class="item-meta">' + meta.join('') + '</div>'
+    + (it.answer ? '<details style="margin-top:7px"><summary class="small muted" style="cursor:pointer">看答案</summary><div class="item-a">' + escapeHtml(it.answer) + '</div></details>' : '')
+    + '<div class="rate-bar">'
+    + '<button class="btn sage-soft small" data-rate="记得" data-id="' + it.id + '">记得</button>'
+    + '<button class="btn small" data-rate="模糊" data-id="' + it.id + '">模糊</button>'
+    + '<button class="btn danger small" data-rate="忘记" data-id="' + it.id + '">忘记</button>'
+    + '<button class="btn small ghost" data-edit="' + it.id + '">编辑</button>'
+    + '</div></div>';
+}
+/* 只绑定刚被重新渲染的那一块，避免同一元素被重复绑定 */
+function bindReviewEvents(root) {
+  const scopes = [root];
+  scopes.forEach(function (scope) {
+    if (!scope) return;
+    scope.querySelectorAll('[data-rate]').forEach(function (b) {
+      b.addEventListener('click', function () { rateItem(b.dataset.id, b.dataset.rate); });
+    });
+    scope.querySelectorAll('[data-edit]').forEach(function (b) {
+      b.addEventListener('click', function () { enterEditMode(b.dataset.edit); });
+    });
+    scope.querySelectorAll('[data-del]').forEach(function (b) {
+      b.addEventListener('click', function () { deleteItem(b.dataset.del); });
+    });
+  });
+}
+
+/* ---------- 全部条目 ---------- */
+let allStateFilter = 'todo';
+function renderAll() {
+  const q = ($('#allSearch').value || '').trim().toLowerCase();
+  const sub = $('#allSubject').value;
+  const t = todayStr();
+  let list = state.items.slice();
+  if (sub) list = list.filter(function (it) { return it.subject === sub; });
+  if (q) {
+    list = list.filter(function (it) {
+      return (it.title + ' ' + it.question + ' ' + it.answer + ' ' + it.chapter + ' ' + it.subject).toLowerCase().indexOf(q) !== -1;
+    });
+  }
+  if (allStateFilter === 'todo') list = list.filter(function (it) { return !it.mastered; });
+  else if (allStateFilter === 'mastered') list = list.filter(function (it) { return it.mastered; });
+  else if (allStateFilter === 'due') list = list.filter(function (it) { return it.nextReviewAt && it.nextReviewAt <= t; });
+  $('#allCountLabel').textContent = '共 ' + list.length + ' 条';
+  const box = $('#allList');
+  if (!list.length) {
+    box.innerHTML = '<div class="card empty">没有符合条件的条目。</div>';
+    return;
+  }
+  list.sort(function (a, b) {
+    const d = (a.nextReviewAt || '') < (b.nextReviewAt || '') ? -1 : 1;
+    return d;
+  });
+  box.innerHTML = list.map(function (it) {
+    const overdueDay = it.nextReviewAt && it.nextReviewAt < t && !it.mastered;
+    const hist = (it.history || []).slice(-6).reverse();
+    return '<div class="item ' + (it.mastered ? 'mastered' : (overdueDay ? 'over' : 'due')) + '">'
+      + '<div class="item-q">' + escapeHtml(it.title || it.question || it.answer.slice(0, 20)) + '</div>'
+      + '<div class="item-meta">'
+      + '<span class="tag sage">' + escapeHtml(it.subject) + '</span>'
+      + (it.chapter ? '<span class="tag">' + escapeHtml(it.chapter) + '</span>' : '')
+      + '<span class="tag">' + escapeHtml(stageLabel(it)) + '</span>'
+      + (it.mastered ? '<span class="tag sky">已掌握</span>' : '<span class="tag ' + (overdueDay ? 'warn' : '') + '">下次 ' + escapeHtml(it.nextReviewAt) + '</span>')
+      + '<span class="tag">复习 ' + (it.history ? it.history.length : 0) + ' 次</span>'
+      + '<span class="tag">录入 ' + escapeHtml(it.learnedAt) + '</span>'
+      + '</div>'
+      + (it.question && it.title ? '<div class="small soft" style="margin-top:5px">问：' + escapeHtml(it.question) + '</div>' : '')
+      + '<details style="margin-top:7px"><summary class="small muted" style="cursor:pointer">看答案' + (hist.length ? '与复习历史' : '') + '</summary>'
+      + '<div class="item-a">' + escapeHtml(it.answer) + '</div>'
+      + (hist.length ? '<div class="small muted" style="margin-top:7px">' + hist.map(function (h) {
+        return escapeHtml(h.reviewedAt + ' · ' + h.rating + '（阶段 ' + h.prevStage + ' → ' + h.nextStage + '）');
+      }).join('<br>') + '</div>' : '')
+      + '</details>'
+      + '<div class="item-actions">'
+      + '<button class="btn small ghost" data-edit="' + it.id + '">编辑</button>'
+      + '<button class="btn small sage-soft" data-rate="记得" data-id="' + it.id + '">今天记住了</button>'
+      + '<button class="btn small" data-rate="模糊" data-id="' + it.id + '">有点模糊</button>'
+      + '<button class="btn small danger" data-del="' + it.id + '">删除</button>'
+      + '</div></div>';
+  }).join('');
+  bindReviewEvents($('#allList'));
+}
+function renderSubjectOptions() {
+  const subs = subjectList();
+  const sel = $('#allSubject');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">全部科目</option>' + subs.map(function (s) {
+    return '<option value="' + escapeHtml(s) + '">' + escapeHtml(s) + '</option>';
+  }).join('');
+  sel.value = subs.indexOf(cur) >= 0 ? cur : '';
+  $('#subjectList').innerHTML = subs.map(function (s) { return '<option value="' + escapeHtml(s) + '"></option>'; }).join('');
+  const qs = $('#quizSubject');
+  const qcur = qs.value;
+  qs.innerHTML = subs.length ? subs.map(function (s) {
+    return '<option value="' + escapeHtml(s) + '">' + escapeHtml(s) + '</option>';
+  }).join('') : '<option value="">（还没有科目）</option>';
+  if (subs.indexOf(qcur) >= 0) qs.value = qcur;
+}
+
+/* =====================================================================
+   6. 抽背
+   ===================================================================== */
+const quiz = { active: false, queue: [], idx: 0, current: null, revealed: false, stats: { '记得': 0, '模糊': 0, '忘记': 0 }, total: 0 };
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+function quizPool(source, one) {
+  const t = todayStr();
+  let pool = state.items.slice();
+  if (source === 'due') {
+    pool = dueItems(t);
+    if (!pool.length) pool = state.items.slice();  // 今天没有到期的，就从全部里抽
+  } else if (source === 'subject') {
+    const sub = $('#quizSubject').value;
+    pool = state.items.filter(function (it) { return it.subject === sub; });
+  }
+  pool = shuffle(pool);
+  if (one) pool = pool.slice(0, 1);
+  return pool;
+}
+function startQuiz(one) {
+  const source = $('#quizSource').value;
+  const pool = quizPool(source, one);
+  if (!pool.length) {
+    $('#quizHint').textContent = '还没有可以抽背的内容，先去“录入背诵”记几条吧。';
+    toast('还没有条目可以抽背。');
+    return;
+  }
+  quiz.active = true;
+  quiz.queue = pool;
+  quiz.idx = 0;
+  quiz.stats = { '记得': 0, '模糊': 0, '忘记': 0 };
+  quiz.total = pool.length;
+  $('#quizSetup').classList.add('hidden');
+  $('#quizResult').classList.add('hidden');
+  $('#quizCard').classList.remove('hidden');
+  showQuizCurrent();
+}
+function showQuizCurrent() {
+  const it = quiz.queue[quiz.idx];
+  if (!it) { endQuiz(); return; }
+  quiz.current = it;
+  quiz.revealed = false;
+  $('#quizProgress').textContent = '第 ' + (quiz.idx + 1) + ' / ' + quiz.total + ' 条';
+  const meta = [];
+  meta.push('<span class="tag sage">' + escapeHtml(it.subject) + '</span>');
+  if (it.chapter) meta.push('<span class="tag">' + escapeHtml(it.chapter) + '</span>');
+  meta.push('<span class="tag">' + escapeHtml(stageLabel(it)) + '</span>');
+  if (it.importance === '高') meta.push('<span class="tag clay">重要</span>');
+  $('#quizMeta').innerHTML = meta.join('');
+  const q = it.question || it.title || (it.answer ? '（没写问题）提示：' + it.answer.slice(0, 20) : '（这条没有内容）');
+  $('#quizQuestion').textContent = q;
+  $('#quizAnswer').textContent = it.answer || '（这条没有填写答案）';
+  $('#quizAnswerBox').classList.add('hidden');
+  $('#quizRateBar').classList.add('hidden');
+  $('#btnShowAnswer').classList.remove('hidden');
+  $('#btnQuizSkip').classList.remove('hidden');
+}
+function revealAnswer() {
+  if (!quiz.current) return;
+  quiz.revealed = true;
+  $('#quizAnswerBox').classList.remove('hidden');
+  $('#btnShowAnswer').classList.add('hidden');
+  $('#quizRateBar').classList.remove('hidden');
+}
+function rateQuiz(rating) {
+  if (!quiz.current) return;
+  applyRating(quiz.current, rating);
+  quiz.stats[rating] = (quiz.stats[rating] || 0) + 1;
+  quiz.idx++;
+  if (quiz.idx >= quiz.queue.length) { endQuiz(); return; }
+  showQuizCurrent();
+}
+function endQuiz() {
+  quiz.active = false;
+  $('#quizCard').classList.add('hidden');
+  $('#quizSetup').classList.remove('hidden');
+  const answered = quiz.stats['记得'] + quiz.stats['模糊'] + quiz.stats['忘记'];
+  const box = $('#quizResult');
+  box.classList.remove('hidden');
+  if (!answered) {
+    $('#quizResultText').textContent = '这一轮还没有自评就结束了。想继续的时候，随时可以再抽一轮。';
+  } else {
+    $('#quizResultText').innerHTML = '本轮抽背 <b>' + answered + '</b> 条，记得 <b>' + quiz.stats['记得'] + '</b>，模糊 <b>' + quiz.stats['模糊'] + '</b>，忘记 <b>' + quiz.stats['忘记'] + '</b>。<br>'
+      + (quiz.stats['忘记'] ? '忘记的那几条明天会再来找你，正常的，不用放在心上。' : '状态不错，保持这个节奏就好。');
+  }
+  refreshAll();
+}
+
+/* =====================================================================
+   7. 备忘录（独立于背诵数据，与今日复习/抽背互不影响）
+   ===================================================================== */
+let memoStatus = 'all';
+
+function parseTags(str) {
+  return String(str || '').split(/[,，、\s]+/).map(function (s) { return s.trim(); }).filter(Boolean).slice(0, 8);
+}
+function memoPriorityClass(p) {
+  if (p === '高') return 'p-high';
+  if (p === '中') return 'p-mid';
+  if (p === '低') return 'p-low';
+  return 'p-none';
+}
+
+/* ---------- 新增 ---------- */
+function addMemo() {
+  const content = $('#memoContent').value.trim();
+  if (!content) { toast('内容先写一点点吧。'); $('#memoContent').focus(); return; }
+  const noDate = $('#memoNoDate').checked;
+  const memo = normalizeMemo({
+    id: uid('memo'),
+    content: content,
+    note: $('#memoNote').value.trim(),
+    type: $('#memoType').value,
+    priority: $('#memoPriority').value,
+    tags: parseTags($('#memoTags').value),
+    dueDate: noDate ? null : ($('#memoDate').value || todayStr()),
+    dueTime: $('#memoTime').value || '',
+    repeat: $('#memoRepeat').value,
+    done: false,
+    pinned: false,
+    createdAt: nowISO(),
+    updatedAt: nowISO(),
+    completedAt: null,
+    lastNotifiedDate: null
+  });
+  state.memos.push(memo);
+  saveState();
+  /* 清空输入，保留上次的类型/标签方便连续录入 */
+  $('#memoContent').value = '';
+  $('#memoNote').value = '';
+  $('#memoTime').value = '';
+  $('#memoHint').textContent = '已添加：' + (memo.dueDate ? dateLabelCN(memo.dueDate) : '无日期');
+  setTimeout(function () { $('#memoHint').textContent = ''; }, 3200);
+  toast('备忘已添加。');
+  refreshAll();
+}
+
+/* ---------- 复用上一次的日期到快速添加表单 ---------- */
+function syncQuickDate() {
+  if (!$('#memoDate').value) $('#memoDate').value = todayStr();
+}
+
+/* ---------- 完成 / 取消完成（含重复规则） ---------- */
+function toggleMemoDone(id) {
+  const m = state.memos.find(function (x) { return x.id === id; });
+  if (!m) return;
+  const t = todayStr();
+  if (!m.done) {
+    m.done = true;
+    m.completedAt = nowISO();
+    m.updatedAt = nowISO();
+    let msg = '完成一件，很好。';
+    if (m.repeat && m.repeat !== '不重复') {
+      const next = spawnNextMemo(m, t);
+      if (next) {
+        state.memos.push(next);
+        msg = '完成一件。下一次是 ' + (m.repeat === '每天' ? '明天' : m.repeat === '每周' ? '7 天后' : '下个月同一天') + '，已经帮你排好了。';
+      }
+    }
+    saveState();
+    toast(msg);
+  } else {
+    m.done = false;
+    m.completedAt = null;
+    m.updatedAt = nowISO();
+    saveState();
+    toast('已取消完成，它回到未完成列表了。');
+  }
+  refreshAll();
+}
+/* 重复备忘录：完成该条后，自动生成下一条 */
+function spawnNextMemo(m, t) {
+  let base = m.dueDate && m.dueDate > t ? m.dueDate : t;
+  let nextDate;
+  if (m.repeat === '每天') nextDate = addDaysStr(base, 1);
+  else if (m.repeat === '每周') nextDate = addDaysStr(base, 7);
+  else if (m.repeat === '每月') nextDate = addMonthsStr(base, 1);
+  else return null;
+  const copy = JSON.parse(JSON.stringify(m));
+  copy.id = uid('memo');
+  copy.dueDate = nextDate;
+  copy.done = false;
+  copy.pinned = false;
+  copy.createdAt = nowISO();
+  copy.updatedAt = nowISO();
+  copy.completedAt = null;
+  copy.lastNotifiedDate = null;
+  return normalizeMemo(copy);
+}
+
+function toggleMemoPin(id) {
+  const m = state.memos.find(function (x) { return x.id === id; });
+  if (!m) return;
+  m.pinned = !m.pinned;
+  m.updatedAt = nowISO();
+  saveState();
+  toast(m.pinned ? '已置顶。' : '已取消置顶。');
+  refreshAll();
+}
+function deleteMemo(id) {
+  state.memos = state.memos.filter(function (x) { return x.id !== id; });
+  saveState();
+  refreshAll();
+  toast('已删除。');
+}
+
+/* ---------- 编辑弹层 ---------- */
+function openMemoEditor(id) {
+  const m = state.memos.find(function (x) { return x.id === id; });
+  if (!m) return;
+  $('#edId').value = m.id;
+  $('#edContent').value = m.content;
+  $('#edNote').value = m.note;
+  $('#edDate').value = m.dueDate || '';
+  $('#edTime').value = m.dueTime || '';
+  $('#edNoDate').checked = !m.dueDate;
+  $('#edType').value = m.type;
+  $('#edPriority').value = m.priority;
+  $('#edTags').value = (m.tags || []).join(', ');
+  $('#edRepeat').value = m.repeat;
+  $('#memoModal').classList.remove('hidden');
+}
+function closeMemoEditor() { $('#memoModal').classList.add('hidden'); }
+function saveMemoEditor() {
+  const id = $('#edId').value;
+  const m = state.memos.find(function (x) { return x.id === id; });
+  if (!m) { closeMemoEditor(); return; }
+  const content = $('#edContent').value.trim();
+  if (!content) { toast('内容不能为空。'); return; }
+  const noDate = $('#edNoDate').checked;
+  m.content = content;
+  m.note = $('#edNote').value.trim();
+  m.dueDate = noDate ? null : ($('#edDate').value || null);
+  m.dueTime = $('#edTime').value || '';
+  m.type = $('#edType').value;
+  m.priority = $('#edPriority').value;
+  m.tags = parseTags($('#edTags').value);
+  m.repeat = $('#edRepeat').value;
+  m.updatedAt = nowISO();
+  saveState();
+  closeMemoEditor();
+  refreshAll();
+  toast('已保存。');
+}
+
+/* ---------- 排序：置顶 > 未完成 > 逾期 > 今天 > 未来 > 无日期 ---------- */
+function memoBucket(m, t) {
+  if (!m.dueDate) return 3;
+  if (m.dueDate < t) return 0;
+  if (m.dueDate === t) return 1;
+  return 2;
+}
+function memoSort(a, b) {
+  const t = todayStr();
+  if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+  if (a.done !== b.done) return a.done ? 1 : -1;
+  const ba = memoBucket(a, t), bb = memoBucket(b, t);
+  if (ba !== bb) return ba - bb;
+  if (a.dueDate && b.dueDate && a.dueDate !== b.dueDate) return a.dueDate < b.dueDate ? -1 : 1;
+  const ta = a.dueTime || '99:99', tb = b.dueTime || '99:99';
+  if (ta !== tb) return ta < tb ? -1 : 1;
+  const pw = { '高': 3, '中': 2, '低': 1, '无': 0 };
+  const pa = pw[a.priority] || 0, pb = pw[b.priority] || 0;
+  if (pa !== pb) return pb - pa;
+  return (a.createdAt || '') < (b.createdAt || '') ? 1 : -1;
+}
+
+/* ---------- 列表渲染 ---------- */
+function renderMemoStats() {
+  const c = memoCounts();
+  $('#memoStatToday').textContent = c.today;
+  $('#memoStatOver').textContent = c.over;
+  $('#memoStatOpen').textContent = c.open;
+  $('#memoStatDone').textContent = c.done;
+}
+function renderMemoTagFilter() {
+  const tags = tagList();
+  const sel = $('#memoTagFilter');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">全部标签</option>' + tags.map(function (t) {
+    return '<option value="' + escapeHtml(t) + '">' + escapeHtml(t) + '</option>';
+  }).join('');
+  sel.value = tags.indexOf(cur) >= 0 ? cur : '';
+  $('#tagList').innerHTML = tags.map(function (t) { return '<option value="' + escapeHtml(t) + '"></option>'; }).join('');
+}
+function renderMemos() {
+  renderMemoStats();
+  renderMemoTagFilter();
+  const t = todayStr();
+  const q = ($('#memoSearch').value || '').trim().toLowerCase();
+  const type = $('#memoTypeFilter').value;
+  const tag = $('#memoTagFilter').value;
+
+  let list = state.memos.slice();
+  if (q) list = list.filter(function (m) { return (m.content + ' ' + m.note + ' ' + (m.tags || []).join(' ')).toLowerCase().indexOf(q) !== -1; });
+  if (type) list = list.filter(function (m) { return m.type === type; });
+  if (tag) list = list.filter(function (m) { return (m.tags || []).indexOf(tag) !== -1; });
+  if (memoStatus === 'open') list = list.filter(function (m) { return !m.done; });
+  else if (memoStatus === 'done') list = list.filter(function (m) { return m.done; });
+  else if (memoStatus === 'today') list = list.filter(function (m) { return !m.done && m.dueDate === t; });
+  else if (memoStatus === 'overdue') list = list.filter(function (m) { return !m.done && m.dueDate && m.dueDate < t; });
+  else if (memoStatus === 'nodate') list = list.filter(function (m) { return !m.dueDate; });
+
+  const openList = list.filter(function (m) { return !m.done; }).sort(memoSort);
+  const doneList = list.filter(function (m) { return m.done; }).sort(function (a, b) {
+    return (b.completedAt || b.updatedAt || '') < (a.completedAt || a.updatedAt || '') ? -1 : 1;
+  });
+
+  const box = $('#memoList');
+  const html = [];
+  if (!openList.length && !doneList.length) {
+    html.push('<div class="card empty">' + (state.memos.length ? '这个筛选下没有备忘。' : '还没有备忘。上面写一句，按“添加备忘”就好。') + '</div>');
+  }
+  openList.forEach(function (m) { html.push(renderMemoCard(m, t)); });
+
+  if (doneList.length) {
+    const forceOpen = memoStatus === 'done' || $('#memoShowDone').checked;
+    html.push('<details class="fold" id="memoDoneFold"' + (forceOpen ? ' open' : '') + '>'
+      + '<summary>已完成 (' + doneList.length + ') —— 做过的都算数</summary>'
+      + '<div class="fold-body">' + doneList.map(function (m) { return renderMemoCard(m, t); }).join('') + '</div></details>');
+  }
+  box.innerHTML = html.join('');
+  bindMemoEvents();
+  const fold = $('#memoDoneFold');
+  if (fold) {
+    fold.addEventListener('toggle', function () { $('#memoShowDone').checked = fold.open; });
+  }
+}
+function renderMemoCard(m, t) {
+  const overdue = !m.done && m.dueDate && m.dueDate < t;
+  const isToday = !m.done && m.dueDate === t;
+  const meta = [];
+  if (m.dueDate) {
+    const cls = overdue ? 'warn' : (isToday ? 'sage' : '');
+    meta.push('<span class="tag ' + cls + '">' + escapeHtml(relDayLabel(m.dueDate)) + (m.dueTime ? ' ' + escapeHtml(m.dueTime) : '') + '</span>');
+  } else {
+    meta.push('<span class="tag">无日期</span>');
+  }
+  meta.push('<span class="tag">' + escapeHtml(m.type) + '</span>');
+  if (m.priority !== '无') meta.push('<span class="tag ' + (m.priority === '高' ? 'clay' : '') + '">' + escapeHtml(m.priority) + '优先</span>');
+  if (m.repeat !== '不重复') meta.push('<span class="tag sky">' + escapeHtml(m.repeat) + '</span>');
+  (m.tags || []).forEach(function (tg) { meta.push('<span class="tag">#' + escapeHtml(tg) + '</span>'); });
+  if (m.done && m.completedAt) meta.push('<span class="muted small">完成于 ' + escapeHtml(String(m.completedAt).slice(0, 10)) + '</span>');
+
+  return '<div class="memo ' + memoPriorityClass(m.priority) + (m.done ? ' is-done' : '') + (m.pinned ? ' is-pinned' : '') + '">'
+    + '<div class="memo-check">'
+    + '<div class="cbox ' + (m.done ? 'on' : '') + '" data-toggle="' + m.id + '" title="完成 / 取消完成">' + (m.done ? '✓' : '') + '</div>'
+    + '<div class="grow">'
+    + '<div class="memo-content">' + (m.pinned ? '<span class="pin-mark">📌 </span>' : '') + escapeHtml(m.content) + '</div>'
+    + (m.note ? '<div class="memo-note">' + escapeHtml(m.note) + '</div>' : '')
+    + '<div class="memo-meta">' + meta.join('') + '</div>'
+    + '</div></div>'
+    + '<div class="memo-actions">'
+    + '<button class="btn tiny ghost" data-pin="' + m.id + '">' + (m.pinned ? '取消置顶' : '置顶') + '</button>'
+    + '<button class="btn tiny ghost" data-editm="' + m.id + '">编辑</button>'
+    + '<button class="btn tiny danger" data-delm="' + m.id + '">删除</button>'
+    + '</div></div>';
+}
+function bindMemoEvents() {
+  const box = $('#memoList');
+  box.querySelectorAll('[data-toggle]').forEach(function (el) {
+    el.addEventListener('click', function () { toggleMemoDone(el.dataset.toggle); });
+  });
+  box.querySelectorAll('[data-pin]').forEach(function (el) {
+    el.addEventListener('click', function () { toggleMemoPin(el.dataset.pin); });
+  });
+  box.querySelectorAll('[data-editm]').forEach(function (el) {
+    el.addEventListener('click', function () { openMemoEditor(el.dataset.editm); });
+  });
+  box.querySelectorAll('[data-delm]').forEach(function (el) {
+    el.addEventListener('click', async function () {
+      const m = state.memos.find(function (x) { return x.id === el.dataset.delm; });
+      if (!m) return;
+      const yes = await confirmDialog('删除这条备忘？', '「' + m.content + '」删除后无法恢复。', '删除');
+      if (yes) deleteMemo(el.dataset.delm);
+    });
+  });
+}
+
+/* ---------- 到期检查与浏览器通知（只在网页打开时检查，无 Service Worker） ---------- */
+async function requestNotifyPermission() {
+  if (!('Notification' in window)) {
+    toast('这个浏览器不支持通知，页面里的提醒照常显示，不影响使用。');
+    return;
+  }
+  if (Notification.permission === 'granted') {
+    checkMemoReminders(true);
+    toast('到期提醒已经开着啦，打开网页时会帮你检查。');
+    return;
+  }
+  if (Notification.permission === 'denied') {
+    toast('浏览器里已经拒绝过通知了，可以在地址栏那个小锁里改回来；不改也没关系，页面提示照常。');
+    return;
+  }
+  try {
+    const p = await Notification.requestPermission();
+    if (p === 'granted') {
+      toast('好啦，打开网页时会提醒你到期的备忘。');
+      checkMemoReminders(false);
+    } else {
+      toast('没关系，不开通知也不影响其他任何功能。');
+    }
+  } catch (e) {
+    console.warn(e);
+    toast('通知权限没设置成功，不影响使用。');
+  }
+  renderMemoBrief();
+}
+function checkMemoReminders(manual) {
+  const t = todayStr();
+  const due = state.memos.filter(function (m) { return !m.done && m.dueDate && m.dueDate <= t; });
+  if (manual) {
+    toast(due.length ? '现在有 ' + due.length + ' 件到期的小事，在“备忘录”里能看到。' : '现在没有到期的备忘，安心。');
+  }
+  if (('Notification' in window) && Notification.permission === 'granted') {
+    let sent = 0;
+    due.forEach(function (m) {
+      if (m.lastNotifiedDate === t) return;
+      try {
+        new Notification('备忘录提醒', { body: m.content + (m.dueTime ? ' · ' + m.dueTime : '') + (m.dueDate < t ? '（' + relDayLabel(m.dueDate) + '）' : ''), tag: m.id });
+        m.lastNotifiedDate = t;
+        sent++;
+      } catch (e) { /* 部分浏览器在非 https 下会抛错，忽略即可 */ }
+    });
+    if (sent) saveState();
+  }
+}
+
+async function cleanDoneMemos() {
+  const done = state.memos.filter(function (m) { return m.done; });
+  if (!done.length) { toast('现在没有已完成的备忘。'); return; }
+  const yes = await confirmDialog('清理已完成的备忘？', '会删除 ' + done.length + ' 条已完成的记录（重复备忘的下一条不受影响）。', '清理');
+  if (!yes) return;
+  state.memos = state.memos.filter(function (m) { return !m.done; });
+  saveState();
+  refreshAll();
+  toast('已清理 ' + done.length + ' 条。');
+}
+
+/* =====================================================================
+   8. AI 陪伴聊天（离线话术 / 可选在线 OpenAI 兼容接口）
+   ===================================================================== */
+let chatSending = false;
+
+function chatSettings() { return state.chat.settings; }
+
+function pushMessage(role, content) {
+  state.chat.messages.push({ id: uid('msg'), role: role, content: content, time: nowISO() });
+  /* 最多保留最近 200 条，超出删最旧的 */
+  if (state.chat.messages.length > MAX_CHAT_MESSAGES) {
+    state.chat.messages = state.chat.messages.slice(-MAX_CHAT_MESSAGES);
+  }
+  saveState();
+}
+function scrollChatBottom() {
+  const box = $('#chatMsgs');
+  box.scrollTop = box.scrollHeight;
+}
+function renderChat() {
+  const cs = chatSettings();
+  const online = cs.mode === 'online';
+  $('#chatModeDot').classList.toggle('online', online);
+  $('#chatModeLabel').textContent = online
+    ? ('在线 AI 模式 · ' + (cs.model || DEFAULT_MODEL) + (cs.apiKey ? '' : '（还没填 API Key，会自动用离线话术）'))
+    : '离线模式 · 不联网';
+  const box = $('#chatMsgs');
+  const msgs = state.chat.messages;
+  const html = [];
+  if (!msgs.length) {
+    html.push('<div class="msg sys"><div class="bubble">今天也想和你说说话。<br>点下面的按钮，或者直接打字都行。</div></div>');
+  }
+  msgs.forEach(function (m) {
+    const t = timeLabelFromISO(m.time);
+    const avatar = m.role === 'user' ? '🙂' : '🌿';
+    html.push('<div class="msg ' + (m.role === 'user' ? 'user' : 'assistant') + '">'
+      + '<div class="avatar">' + avatar + '</div>'
+      + '<div class="bubble">' + escapeHtml(m.content) + '</div>'
+      + '<div class="time">' + escapeHtml(t) + '</div>'
+      + '</div>');
+  });
+  if (chatSending) {
+    html.push('<div class="msg assistant" id="typingBubble"><div class="avatar">🌿</div><div class="bubble">…</div><div class="time"></div></div>');
+  }
+  box.innerHTML = html.join('');
+}
+
+/* ---------- 在线模式：OpenAI 兼容接口 ---------- */
+async function callOnlineAPI(userText) {
+  const cs = chatSettings();
+  const base = String(cs.apiBase || DEFAULT_API_BASE).replace(/\/+$/, '');
+  const key = String(cs.apiKey || '').trim();
+  if (!key) throw new Error('没有填写 API Key');
+  const history = state.chat.messages.slice(0, -1).slice(-CHAT_CONTEXT_LIMIT);
+  const messages = [{ role: 'system', content: cs.systemPrompt || DEFAULT_SYSTEM_PROMPT }];
+  history.forEach(function (m) { messages.push({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content }); });
+  messages.push({ role: 'user', content: userText });
+
+  const ctrl = new AbortController();
+  const timer = setTimeout(function () { ctrl.abort(); }, 25000);
+  let res;
+  try {
+    res = await fetch(base + '/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+      body: JSON.stringify({ model: cs.model || DEFAULT_MODEL, messages: messages, temperature: 0.8 }),
+      signal: ctrl.signal
+    });
+  } finally { clearTimeout(timer); }
+  if (!res.ok) throw new Error('接口返回 ' + res.status);
+  const data = await res.json();
+  const text = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+  if (!text) throw new Error('返回内容为空');
+  return String(text).trim();
+}
+
+/* ---------- 发送 ---------- */
+async function sendChat(text) {
+  const content = String(text == null ? $('#chatInput').value : text).trim();
+  if (!content) return;
+  if (chatSending) return;
+  chatSending = true;
+  $('#chatInput').value = '';
+  $('#btnChatSend').disabled = true;
+  pushMessage('user', content);
+  renderChat();
+  scrollChatBottom();
+
+  let reply = '';
+  let note = '';
+  try {
+    if (chatSettings().mode === 'online') {
+      try {
+        reply = await callOnlineAPI(content);
+      } catch (e) {
+        console.warn('在线 AI 调用失败：', e);
+        note = '网络或 AI 暂时没连上，我先用离线模式陪你说说话。\n\n';
+        reply = offlineReply(content);
+      }
+    } else {
+      reply = offlineReply(content);
+    }
+  } catch (e) {
+    console.warn(e);
+    reply = offlineReply(content);
+  }
+  chatSending = false;
+  $('#btnChatSend').disabled = false;
+  pushMessage('assistant', note + reply);
+  renderChat();
+  scrollChatBottom();
+}
+
+async function clearChat() {
+  if (!state.chat.messages.length) { toast('现在还没有聊天记录。'); return; }
+  const yes = await confirmDialog('清空聊天记录？', '会删除最近的 ' + state.chat.messages.length + ' 条消息，删除后无法恢复（设置和备忘录不受影响）。', '清空');
+  if (!yes) return;
+  state.chat.messages = [];
+  saveState();
+  renderChat();
+  toast('聊天记录已清空，可以重新开始。');
+}
+
+/* ---------- AI 设置 ---------- */
+function renderChatSettings() {
+  const cs = chatSettings();
+  $('#setChatMode').value = cs.mode === 'online' ? 'online' : 'offline';
+  $('#setApiBase').value = cs.apiBase || DEFAULT_API_BASE;
+  $('#setApiKey').value = cs.apiKey || '';
+  $('#setModel').value = cs.model || DEFAULT_MODEL;
+  $('#setSystemPrompt').value = cs.systemPrompt || DEFAULT_SYSTEM_PROMPT;
+  $('#onlineSettings').classList.toggle('hidden', cs.mode !== 'online');
+}
+function saveChatSettings() {
+  const mode = $('#setChatMode').value === 'online' ? 'online' : 'offline';
+  state.chat.settings = {
+    mode: mode,
+    apiBase: ($('#setApiBase').value.trim() || DEFAULT_API_BASE),
+    apiKey: $('#setApiKey').value.trim(),
+    model: ($('#setModel').value.trim() || DEFAULT_MODEL),
+    systemPrompt: ($('#setSystemPrompt').value.trim() || DEFAULT_SYSTEM_PROMPT)
+  };
+  saveState();
+  renderChatSettings();
+  renderChat();
+  $('#chatSetHint').textContent = mode === 'online'
+    ? (state.chat.settings.apiKey ? '已保存。在线模式会调用你自己填写的接口。' : '已保存，但还没有填 API Key，会先用离线话术。')
+    : '已保存，当前是离线模式，不联网。';
+  toast('AI 设置已保存。');
+}
+async function testChatConnection() {
+  const hint = $('#chatSetHint');
+  const cs = chatSettings();
+  if (cs.mode !== 'online') { hint.textContent = '当前是离线模式，不需要连接测试。'; return; }
+  if (!cs.apiKey) { hint.textContent = '先填好 API Key 并点“保存 AI 设置”，再测试。'; return; }
+  hint.textContent = '正在测试连接…';
+  try {
+    await callOnlineAPI('你好');
+    hint.textContent = '连接成功，在线 AI 模式可以用了。';
+  } catch (e) {
+    hint.textContent = '没连上：' + (e && e.message ? e.message : '未知原因') + '。会继续用离线话术，不影响使用。';
+  }
+}
+
+/* =====================================================================
+   9. 设置 / 备份（导出与导入都要带上 memos 和 chat）
+   ===================================================================== */
+function renderSetStats() {
+  $('#setStatItems').textContent = state.items.length;
+  $('#setStatMastered').textContent = state.items.filter(function (i) { return i.mastered; }).length;
+  $('#setStatReviews').textContent = state.items.reduce(function (n, i) { return n + (i.history ? i.history.length : 0); }, 0);
+  $('#setStatMemos').textContent = state.memos.length;
+  $('#setStatChats').textContent = state.chat.messages.length;
+}
+function renderSettings() {
+  $('#setIntervals').value = intervals().join(', ');
+  $('#setMasteredDays').value = state.settings.masteredDays || DEFAULT_MASTERED_DAYS;
+  $('#setWeatherEnabled').checked = state.settings.weatherEnabled !== false;
+  renderChatSettings();
+  renderSetStats();
+}
+function saveIntervals() {
+  const parts = String($('#setIntervals').value || '').split(/[,，\s]+/).map(function (s) { return Number(s); }).filter(function (n) { return isFinite(n) && n > 0; });
+  if (!parts.length) { toast('至少写一个间隔天数，比如 1, 2, 4, 7, 15, 30。'); return; }
+  state.settings.reviewIntervals = parts.slice(0, 12).map(function (n) { return clampNum(n, 1, 365, 1); });
+  state.settings.masteredDays = clampNum($('#setMasteredDays').value, 1, 365, DEFAULT_MASTERED_DAYS);
+  saveState();
+  renderSettings();
+  toast('复习节奏已保存，对之后的复习生效。');
+}
+
+function buildBackup() {
+  const data = JSON.parse(JSON.stringify(state));
+  /* 安全考虑：备份文件里不写 API Key，避免 Key 跟着文件扩散 */
+  data.chat.settings.apiKey = '';
+  data.exportedAt = nowISO();
+  return data;
+}
+function exportJSON() {
+  try {
+    const data = buildBackup();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'beishu-backup-' + todayStr() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+    $('#backupHint').textContent = '已导出：' + data.items.length + ' 条背诵、' + data.memos.length + ' 条备忘、' + data.chat.messages.length + ' 条聊天记录（为安全起见不含 API Key）。';
+    toast('备份已导出。');
+  } catch (e) {
+    console.warn(e);
+    toast('导出失败了，换个浏览器或检查存储空间。');
+  }
+}
+function validateBackup(raw) {
+  const errs = [];
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) { errs.push('文件内容不是一个对象'); return errs; }
+  if (!Array.isArray(raw.items)) errs.push('缺少 items 列表');
+  if (raw.memos !== undefined && !Array.isArray(raw.memos)) errs.push('memos 不是数组');
+  if (raw.chat !== undefined && (typeof raw.chat !== 'object' || Array.isArray(raw.chat))) errs.push('chat 不是对象');
+  if (raw.chat && raw.chat.messages !== undefined && !Array.isArray(raw.chat.messages)) errs.push('chat.messages 不是数组');
+  if (raw.daily !== undefined && (typeof raw.daily !== 'object' || Array.isArray(raw.daily))) errs.push('daily 不是对象');
+  return errs;
+}
+async function importData(raw) {
+  const errs = validateBackup(raw);
+  if (errs.length) {
+    toast('导入失败：' + errs[0] + '。原数据保持不变。');
+    $('#backupHint').textContent = '这个文件看起来不是本应用的备份，已取消导入，你现在的数据没有被改动。';
+    return;
+  }
+  const nItems = raw.items.length;
+  const nMemos = Array.isArray(raw.memos) ? raw.memos.length : 0;
+  const nChat = (raw.chat && Array.isArray(raw.chat.messages)) ? raw.chat.messages.length : 0;
+  const yes = await confirmDialog(
+    '导入备份并覆盖？',
+    '将恢复 ' + nItems + ' 条背诵、' + nMemos + ' 条备忘、' + nChat + ' 条聊天记录；当前数据会被覆盖，建议先导出一次。',
+    '导入并覆盖'
+  );
+  if (!yes) return;
+  /* 老备份里没有 memos / chat 时，保留你现有的备忘和聊天，避免误删 */
+  const keepMemos = Array.isArray(raw.memos) ? null : (state.memos || []);
+  const keepChat = (raw.chat && Array.isArray(raw.chat.messages)) ? null : state.chat;
+  const keepChatSettings = (raw.chat && raw.chat.settings) ? null : state.chat.settings;
+  state = normalizeData(raw);
+  if (keepMemos) state.memos = keepMemos;
+  if (keepChat) state.chat.messages = keepChat.messages;
+  if (keepChatSettings && !state.chat.settings.apiKey) state.chat.settings = keepChatSettings;
+  ensureTodayDaily();
+  saveState();
+  refreshAll();
+  renderSettings();
+  renderChat();
+  $('#backupHint').textContent = '导入完成：背诵 ' + state.items.length + ' 条、备忘 ' + state.memos.length + ' 条、聊天 ' + state.chat.messages.length + ' 条。';
+  toast('导入完成。');
+}
+async function clearAllData() {
+  const yes = await confirmDialog('清空全部数据？', '背诵条目、复习历史、备忘录、聊天记录和设置都会被删除，且无法恢复。强烈建议先导出备份。', '仍然清空');
+  if (!yes) return;
+  const yes2 = await confirmDialog('真的要清空吗？', '最后一次确认：清空后没有撤销的办法。', '确认清空');
+  if (!yes2) return;
+  state = defaultData();
+  ensureTodayDaily();
+  saveState();
+  refreshAll();
+  renderSettings();
+  renderChat();
+  toast('已清空，一切重新开始。');
+}
+
+/* =====================================================================
+   10. 统一刷新
+   ===================================================================== */
+function updateTopStats() {
+  const t = todayStr();
+  const c = memoCounts();
+  $('#statDue').textContent = dueItems(t).length;
+  $('#statMemoToday').textContent = c.today;
+  $('#statMemoOver').textContent = c.over;
+}
+function refreshAll() {
+  ensureTodayDaily();
+  updateTopStats();
+  renderSubjectOptions();
+  renderHome();
+  renderReview();
+  renderAll();
+  renderMemos();
+  renderQuote();
+  renderMicro();
+  renderSetStats();
+}
+
+/* =====================================================================
+   11. 事件绑定与启动
+   ===================================================================== */
+function bindEvents() {
+  /* 导航（document 级委托，动态生成的按钮也能用） */
+  $$('.navbtn').forEach(function (b) {
+    b.addEventListener('click', function () { switchTab(b.dataset.tab); });
+  });
+  document.addEventListener('click', function (e) {
+    const g = e.target.closest ? e.target.closest('[data-goto]') : null;
+    if (g) { switchTab(g.dataset.goto); }
+  });
+
+  /* 首页 */
+  $('#btnMicroDone').addEventListener('click', onMicroDone);
+  $('#btnMemoBriefGo').addEventListener('click', function () { switchTab('memo'); });
+  $('#btnNotifyPerm').addEventListener('click', requestNotifyPermission);
+  $('#btnCheckNow').addEventListener('click', function () { checkMemoReminders(true); });
+  $('#btnNotifyPerm2').addEventListener('click', requestNotifyPermission);
+  $('#btnWeatherRefresh').addEventListener('click', function () { loadWeather(true); });
+
+  /* 录入背诵 */
+  $('#inLearnedAt').value = todayStr();
+  $('#batchLearnedAt').value = todayStr();
+  $('#btnSaveItem').addEventListener('click', saveItemForm);
+  $('#btnBatchSave').addEventListener('click', batchSave);
+  /* 编辑时的“取消编辑”按钮（动态插入，减少 HTML 噪音） */
+  const cancel = document.createElement('button');
+  cancel.className = 'btn small ghost hidden';
+  cancel.id = 'btnCancelEdit';
+  cancel.textContent = '取消编辑';
+  cancel.addEventListener('click', function () { exitEditMode(); clearItemForm(); toast('已取消编辑。'); });
+  $('#btnSaveItem').parentNode.appendChild(cancel);
+
+  /* 今日复习 */
+  $('#btnReviewRefresh').addEventListener('click', function () { refreshAll(); toast('已按今天重新计算。'); });
+
+  /* 抽背 */
+  $('#quizSource').addEventListener('change', function () {
+    $('#quizSubjectField').classList.toggle('hidden', $('#quizSource').value !== 'subject');
+  });
+  $('#btnQuizStart').addEventListener('click', function () { startQuiz(false); });
+  $('#btnQuizOne').addEventListener('click', function () { startQuiz(true); });
+  $('#btnShowAnswer').addEventListener('click', revealAnswer);
+  $('#btnQuizSkip').addEventListener('click', function () {
+    quiz.idx++;
+    if (quiz.idx >= quiz.queue.length) endQuiz(); else showQuizCurrent();
+  });
+  $('#btnQuizEnd').addEventListener('click', endQuiz);
+  $('#btnQuizAgain').addEventListener('click', function () { startQuiz(false); });
+  $$('#quizRateBar [data-rate]').forEach(function (b) {
+    b.addEventListener('click', function () { rateQuiz(b.dataset.rate); });
+  });
+
+  /* 全部条目 */
+  $('#allSearch').addEventListener('input', renderAll);
+  $('#allSubject').addEventListener('change', renderAll);
+  $$('[data-allstate]').forEach(function (c) {
+    c.addEventListener('click', function () {
+      allStateFilter = c.dataset.allstate;
+      $$('[data-allstate]').forEach(function (x) { x.classList.toggle('active', x === c); });
+      renderAll();
+    });
+  });
+
+  /* 备忘录 */
+  syncQuickDate();
+  $('#btnMemoAdd').addEventListener('click', addMemo);
+  $('#memoContent').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addMemo(); }
+  });
+  $('#btnMemoToday').addEventListener('click', function () {
+    $('#memoNoDate').checked = false;
+    $('#memoDate').value = todayStr();
+    toast('日期已设为今天。');
+  });
+  $('#memoNoDate').addEventListener('change', function () {
+    $('#memoDate').disabled = $('#memoNoDate').checked;
+    $('#memoTime').disabled = $('#memoNoDate').checked;
+  });
+  $('#memoSearch').addEventListener('input', renderMemos);
+  $('#memoTypeFilter').addEventListener('change', renderMemos);
+  $('#memoTagFilter').addEventListener('change', renderMemos);
+  $('#memoShowDone').addEventListener('change', renderMemos);
+  $$('[data-mstatus]').forEach(function (c) {
+    c.addEventListener('click', function () {
+      memoStatus = c.dataset.mstatus;
+      $$('[data-mstatus]').forEach(function (x) { x.classList.toggle('active', x === c); });
+      renderMemos();
+    });
+  });
+  $('#btnMemoCleanDone').addEventListener('click', cleanDoneMemos);
+  $('#btnMemoSaveEdit').addEventListener('click', saveMemoEditor);
+  $('#btnMemoCancelEdit').addEventListener('click', closeMemoEditor);
+  $('#btnMemoDeleteEdit').addEventListener('click', async function () {
+    const id = $('#edId').value;
+    const m = state.memos.find(function (x) { return x.id === id; });
+    if (!m) return;
+    const yes = await confirmDialog('删除这条备忘？', '「' + m.content + '」删除后无法恢复。', '删除');
+    if (!yes) return;
+    closeMemoEditor();
+    deleteMemo(id);
+  });
+  $('#edNoDate').addEventListener('change', function () {
+    $('#edDate').disabled = $('#edNoDate').checked;
+    $('#edTime').disabled = $('#edNoDate').checked;
+  });
+  $('#memoModal').addEventListener('click', function (e) { if (e.target === $('#memoModal')) closeMemoEditor(); });
+
+  /* AI 陪伴 */
+  $('#btnChatSend').addEventListener('click', function () { sendChat(); });
+  $('#chatInput').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+  });
+  $('#chatInput').addEventListener('input', function () {
+    const el = $('#chatInput');
+    el.style.height = 'auto';
+    el.style.height = Math.min(120, el.scrollHeight) + 'px';
+  });
+  $$('#quickBar [data-quick]').forEach(function (b) {
+    b.addEventListener('click', function () { sendChat(b.dataset.quick); });
+  });
+  $('#btnChatClear').addEventListener('click', clearChat);
+
+  /* 设置 */
+  $('#btnSaveIntervals').addEventListener('click', saveIntervals);
+  $('#btnResetIntervals').addEventListener('click', function () {
+    $('#setIntervals').value = DEFAULT_INTERVALS.join(', ');
+    $('#setMasteredDays').value = DEFAULT_MASTERED_DAYS;
+    saveIntervals();
+  });
+  $('#setWeatherEnabled').addEventListener('change', function () {
+    state.settings.weatherEnabled = $('#setWeatherEnabled').checked;
+    saveState();
+    loadWeather(false);
+  });
+  $('#setChatMode').addEventListener('change', function () {
+    $('#onlineSettings').classList.toggle('hidden', $('#setChatMode').value !== 'online');
+  });
+  $('#btnSaveChatSettings').addEventListener('click', saveChatSettings);
+  $('#btnTestChat').addEventListener('click', testChatConnection);
+  $('#btnExport').addEventListener('click', exportJSON);
+  $('#btnImport').addEventListener('click', function () { $('#importFile').click(); });
+  $('#importFile').addEventListener('change', function (e) {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = function () {
+      try {
+        const raw = JSON.parse(String(reader.result));
+        importData(raw);
+      } catch (err) {
+        console.warn(err);
+        toast('这个文件不是有效的 JSON，已取消导入。');
+      }
+      e.target.value = '';
+    };
+    reader.onerror = function () { toast('文件读取失败，换一个文件试试。'); e.target.value = ''; };
+    reader.readAsText(f, 'utf-8');
+  });
+  $('#btnClearAll').addEventListener('click', clearAllData);
+}
+
+/* ---------- 启动 ---------- */
+function init() {
+  loadState();
+  bindEvents();
+  refreshAll();
+  renderSettings();
+  renderChat();
+  startClock();
+  startWeather();
+  /* 打开网页时检查一次到期备忘（没有后台推送、没有 Service Worker） */
+  setTimeout(function () { checkMemoReminders(false); }, 1200);
+  /* 跨天时自动换掉“每日一句/每日小事”，并刷新到期计算 */
+  setInterval(function () {
+    const key = 'day_' + todayStr();
+    if (document.body.dataset.lastDay !== key) {
+      document.body.dataset.lastDay = key;
+      ensureTodayDaily();
+      refreshAll();
+    }
+  }, 60000);
+  document.body.dataset.lastDay = 'day_' + todayStr();
+  console.log('%c背书手账已启动', 'color:#8aa587', '数据 key：' + STORAGE_KEY);
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+else init();
+</script>
+</body>
+</html>
