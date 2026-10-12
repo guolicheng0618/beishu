@@ -31,6 +31,8 @@
   --sky-soft:#e9f0f5;
   --warn:#c08a72;
   --warn-soft:#f8ece5;
+  --lilac:#b9a7c4;
+  --lilac-soft:#f1ecf4;
   --radius:16px;
   --radius-sm:11px;
   --shadow:0 2px 10px rgba(122,105,84,.06);
@@ -315,6 +317,26 @@ details.fold .fold-body{margin-top:9px}
 @media print{.sidebar,.topbar{display:none}}
 
 /* ============================================================
+   倒计时 + 强化阶段模块（新增）
+   ============================================================ */
+.countdown-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px}
+.countdown{display:inline-flex;align-items:center;gap:7px;background:var(--clay-soft);border:1px solid #f0dccb;color:#8f6746;border-radius:999px;padding:5px 14px;font-size:13px}
+.countdown b{font-size:15.5px;font-weight:600;color:#a8714c;font-variant-numeric:tabular-nums}
+.countdown .week{color:#b08a6c;font-size:12px}
+.countdown.over{background:var(--bg-2);border-color:var(--line);color:var(--ink-faint)}
+.countdown.over b{color:var(--ink-faint)}
+.tag.lilac{background:var(--lilac-soft);border-color:#e6dcf0;color:#7d6b8c}
+.s2-item{border:1px solid var(--line);border-left:3px solid var(--line);border-radius:var(--radius-sm);background:var(--card);padding:10px 12px;margin-bottom:8px}
+.s2-item.m-sage{border-left-color:#8aa587}
+.s2-item.m-sky{border-left-color:#9db4c7}
+.s2-item.m-clay{border-left-color:#cf9a78}
+.s2-item.m-warn{border-left-color:#c98b7a}
+.s2-item.m-lilac{border-left-color:#b9a7c4}
+.s2-q{font-size:14.5px;font-weight:600;line-height:1.55;word-break:break-word}
+.s2-a{font-size:13.5px;color:var(--ink-soft);white-space:pre-wrap;margin-top:7px;padding-top:7px;border-top:1px dashed var(--line)}
+.s2-hintline{background:var(--sage-soft);border:1px solid #dbe7d7;border-radius:var(--radius-sm);padding:8px 11px;font-size:12.5px;color:#5f7d5c;margin-bottom:10px}
+
+/* ============================================================
    触屏 / 平板 / 手机 适配（新增）
    ============================================================ */
 /* iOS 上输入框字号小于 16px 时聚焦会自动放大整页 —— 移动端统一 16px 避免这个问题 */
@@ -356,6 +378,7 @@ details.fold .fold-body{margin-top:9px}
       <button class="navbtn" data-tab="review"><span class="ico">📖</span><span class="lbl">今日复习</span></button>
       <button class="navbtn" data-tab="input"><span class="ico">✍️</span><span class="lbl">录入背诵</span></button>
       <button class="navbtn" data-tab="quiz"><span class="ico">🎲</span><span class="lbl">抽背</span></button>
+      <button class="navbtn" data-tab="stage2"><span class="ico">🌱</span><span class="lbl">强化阶段</span></button>
       <button class="navbtn" data-tab="all"><span class="ico">📚</span><span class="lbl">全部条目</span></button>
       <button class="navbtn" data-tab="memo"><span class="ico">📝</span><span class="lbl">备忘录</span></button>
       <button class="navbtn" data-tab="chat"><span class="ico">💬</span><span class="lbl">AI 陪伴</span></button>
@@ -377,6 +400,7 @@ details.fold .fold-body{margin-top:9px}
           <button class="stat warn" data-goto="memo"><span class="stat-num" id="statMemoOver">0</span><span class="stat-lbl">逾期未完成</span></button>
         </div>
       </div>
+      <div class="countdown-row"><span class="countdown" id="countdown">…</span></div>
       <div class="weather-line" id="weatherLine"><span class="weather-loading">正在看看北京今天怎么样…</span></div>
     </header>
 
@@ -560,6 +584,7 @@ details.fold .fold-body{margin-top:9px}
         <div class="row">
           <button class="btn primary" id="btnQuizStart">开始抽背</button>
           <button class="btn" id="btnQuizOne">只抽一条</button>
+          <button class="btn small ghost" data-goto="stage2">按模块抽强化题 →</button>
         </div>
         <div class="small muted" id="quizHint" style="margin-top:8px"></div>
       </div>
@@ -592,6 +617,136 @@ details.fold .fold-body{margin-top:9px}
           <button class="btn primary small" id="btnQuizAgain">再来一轮</button>
         </div>
       </div>
+    </section>
+
+    <!-- ============================================================
+         强化阶段（第二轮）：按模块录入 + 按模块随机抽题
+         ============================================================ -->
+    <section class="panel hidden" id="tab-stage2">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">🌱 强化阶段 · 按模块录入</div>
+          <div class="card-sub">第一轮按章节录的内容在「全部条目」，这里放第二轮的模块题</div>
+        </div>
+        <div class="s2-hintline">第一轮 = 按章节打基础（「录入背诵」）；第二轮 = 按模块强化（这里）。两个题库各自独立，互不影响。</div>
+        <div class="grid2">
+          <div class="field">
+            <label>模块 *</label>
+            <select class="select" id="s2Module"></select>
+          </div>
+          <div class="field">
+            <label>科目（可选）</label>
+            <input class="input" id="s2Subject" placeholder="教育学 / 政治 / 英语…" list="subjectList">
+          </div>
+        </div>
+        <div class="field">
+          <label>小标题（可选）</label>
+          <input class="input" id="s2Title" placeholder="起个短名字，列表里好认">
+        </div>
+        <div class="field">
+          <label>题目 / 问题 *</label>
+          <textarea class="textarea" id="s2Question" placeholder="例：简述教育与社会发展的关系"></textarea>
+        </div>
+        <div class="field">
+          <label>答案 / 答题要点</label>
+          <textarea class="textarea" id="s2Answer" style="min-height:96px" placeholder="按要点写下来，抽题时对着检验…"></textarea>
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label>重要程度</label>
+            <select class="select" id="s2Importance"><option>高</option><option selected>中</option><option>低</option></select>
+          </div>
+          <div class="field">
+            <label>标签（可选）</label>
+            <input class="input" id="s2Tags" placeholder="高频, 易错">
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn primary" id="btnS2Save">保存到模块</button>
+          <button class="btn small ghost hidden" id="btnS2Cancel">取消编辑</button>
+          <span class="small muted" id="s2Hint"></span>
+        </div>
+      </div>
+
+      <div class="card tight">
+        <div class="mini-stats" id="s2Stats"></div>
+      </div>
+
+      <div class="card" id="s2QuizSetup">
+        <div class="card-head">
+          <div class="card-title">🎯 按模块随机抽题</div>
+          <div class="card-sub">先看题，想好了再翻要点，然后诚实地给自己一个评价</div>
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label>抽哪个模块</label>
+            <select class="select" id="s2QuizModule"></select>
+          </div>
+          <div class="field">
+            <label>科目</label>
+            <select class="select" id="s2QuizSubject"><option value="">全部科目</option></select>
+          </div>
+        </div>
+        <div class="field">
+          <label>抽题范围</label>
+          <select class="select" id="s2QuizRange">
+            <option value="all">全部题目</option>
+            <option value="new">还没检验过的</option>
+            <option value="weak">上次答得不好的（模糊 / 忘记）</option>
+          </select>
+        </div>
+        <div class="row">
+          <button class="btn primary" id="btnS2QuizStart">开始抽题</button>
+          <button class="btn" id="btnS2QuizOne">只抽一条</button>
+        </div>
+        <div class="small muted" id="s2QuizHint" style="margin-top:8px"></div>
+      </div>
+
+      <div class="card hidden" id="s2QuizCard">
+        <div class="card-head">
+          <div class="card-title" id="s2QuizProgress">抽题中</div>
+          <button class="btn tiny ghost" id="btnS2QuizEnd">结束本轮</button>
+        </div>
+        <div class="item-meta" id="s2QuizMeta" style="margin-bottom:8px"></div>
+        <div class="item-q" id="s2QuizQuestion"></div>
+        <div id="s2QuizAnswerBox" class="hidden"><div class="item-a" id="s2QuizAnswer"></div></div>
+        <div class="row" style="margin-top:11px">
+          <button class="btn primary" id="btnS2ShowAnswer">显示答案</button>
+          <button class="btn small" id="btnS2Skip">跳过这条</button>
+          <button class="btn small ghost hidden" id="btnS2EditCurrent">编辑这条</button>
+        </div>
+        <div class="rate-bar hidden" id="s2QuizRateBar">
+          <button class="btn sage-soft" data-s2rate="记得">记得</button>
+          <button class="btn" data-s2rate="模糊">模糊</button>
+          <button class="btn danger" data-s2rate="忘记">忘记</button>
+        </div>
+      </div>
+
+      <div class="card hidden" id="s2QuizResult">
+        <div class="card-title">🌿 本轮抽题结果</div>
+        <div class="small soft" id="s2QuizResultText" style="margin-top:7px"></div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn primary small" id="btnS2QuizAgain">再来一轮</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">📚 强化题库</div>
+          <div class="card-sub" id="s2ListCount"></div>
+        </div>
+        <div class="grid2">
+          <div class="field" style="margin-bottom:8px">
+            <label>搜索（题目 / 答案 / 标签）</label>
+            <input class="input" id="s2Search" placeholder="输入关键词…">
+          </div>
+          <div class="field" style="margin-bottom:8px">
+            <label>只看模块</label>
+            <select class="select" id="s2FilterModule"></select>
+          </div>
+        </div>
+      </div>
+      <div id="s2List"></div>
     </section>
 
     <!-- ============================================================
@@ -785,6 +940,19 @@ details.fold .fold-body{margin-top:9px}
       </div>
 
       <div class="card">
+        <div class="card-title">⏳ 考试倒计时</div>
+        <div class="field" style="margin-top:10px">
+          <label>目标日期（顶部「还有多少天」按这个算）</label>
+          <input class="input" type="date" id="setExamDate">
+        </div>
+        <div class="row">
+          <button class="btn primary small" id="btnSaveExamDate">保存倒计时日期</button>
+          <button class="btn small" id="btnResetExamDate">恢复 2026-12-19</button>
+        </div>
+        <div class="small muted" id="examDateHint" style="margin-top:7px"></div>
+      </div>
+
+      <div class="card">
         <div class="card-title">🌤️ 天气与提醒</div>
         <div class="row" style="margin-top:10px">
           <label class="small muted"><input type="checkbox" id="setWeatherEnabled"> 显示北京天气</label>
@@ -848,6 +1016,7 @@ details.fold .fold-body{margin-top:9px}
           <div class="mini"><b id="setStatReviews">0</b><span>复习次数</span></div>
           <div class="mini"><b id="setStatMemos">0</b><span>备忘</span></div>
           <div class="mini"><b id="setStatChats">0</b><span>聊天消息</span></div>
+          <div class="mini"><b id="setStatS2">0</b><span>强化题目</span></div>
         </div>
         <div class="row" style="margin-top:11px">
           <button class="btn small danger" id="btnClearAll">清空全部数据</button>
@@ -1310,10 +1479,12 @@ function defaultData() {
       }
     },
     daily: {},
+    stage2: { items: [] },
     settings: {
       reviewIntervals: DEFAULT_INTERVALS.slice(),
       masteredDays: DEFAULT_MASTERED_DAYS,
-      weatherEnabled: true
+      weatherEnabled: true,
+      examDate: DEFAULT_EXAM_DATE
     }
   };
 }
@@ -1388,6 +1559,7 @@ function normalizeData(raw) {
   if (!raw || typeof raw !== 'object') return d;
   if (Array.isArray(raw.items)) d.items = raw.items.map(normalizeItem).filter(Boolean);
   if (Array.isArray(raw.memos)) d.memos = raw.memos.map(normalizeMemo).filter(Boolean);
+  if (raw.stage2 && Array.isArray(raw.stage2.items)) d.stage2.items = raw.stage2.items.map(normalizeS2Item).filter(Boolean);
   if (raw.chat && typeof raw.chat === 'object') {
     if (Array.isArray(raw.chat.messages)) d.chat.messages = raw.chat.messages.map(normalizeMessage).filter(Boolean).slice(-MAX_CHAT_MESSAGES);
     const cs = raw.chat.settings || {};
@@ -1407,6 +1579,7 @@ function normalizeData(raw) {
     d.settings.reviewIntervals = iv;
     d.settings.masteredDays = clampNum(raw.settings.masteredDays, 1, 365, DEFAULT_MASTERED_DAYS);
     d.settings.weatherEnabled = raw.settings.weatherEnabled !== false;
+    d.settings.examDate = parseDateStr(raw.settings.examDate) ? String(raw.settings.examDate).slice(0, 10) : DEFAULT_EXAM_DATE;
   }
   d.version = 1;
   return d;
@@ -1534,7 +1707,7 @@ function confirmDialog(title, text, yesLabel) {
 }
 
 /* ---------- 导航切换 ---------- */
-const TAB_IDS = ['home', 'review', 'input', 'quiz', 'all', 'memo', 'chat', 'settings'];
+const TAB_IDS = ['home', 'review', 'input', 'quiz', 'stage2', 'all', 'memo', 'chat', 'settings'];
 function switchTab(name) {
   if (TAB_IDS.indexOf(name) === -1) name = 'home';
   $$('.navbtn').forEach(function (b) { b.classList.toggle('active', b.dataset.tab === name); });
@@ -2645,6 +2818,361 @@ async function testChatConnection() {
   }
 }
 
+
+/* =====================================================================
+   8.5 考试倒计时
+   ===================================================================== */
+const DEFAULT_EXAM_DATE = '2026-12-19';
+function examDateStr() {
+  const s = (state && state.settings) ? state.settings.examDate : '';
+  return parseDateStr(s) ? s : DEFAULT_EXAM_DATE;
+}
+function daysToExam() {
+  const a = parseDateStr(examDateStr()), b = parseDateStr(todayStr());
+  if (!a || !b) return 0;
+  return Math.round((a - b) / 86400000);
+}
+function examDateCN() {
+  const d = parseDateStr(examDateStr());
+  return d ? (d.getMonth() + 1) + '月' + d.getDate() + '日' : '';
+}
+function renderCountdown() {
+  const el = document.getElementById('countdown');
+  if (!el) return;
+  const n = daysToExam();
+  el.classList.toggle('over', n < 0);
+  if (n > 0) {
+    const wk = n >= 14 ? '<span class="week">（约 ' + Math.round(n / 7) + ' 周）</span>' : '';
+    el.innerHTML = '⏳ 距离 <b>' + examDateCN() + '</b> 还有 <b class="cd-num">' + n + '</b> 天' + wk;
+  } else if (n === 0) {
+    el.innerHTML = '⏳ <b>今天就是 ' + examDateCN() + '</b>，稳住，你已经准备很久了';
+  } else {
+    el.innerHTML = '⏳ ' + examDateCN() + ' 已过去 ' + Math.abs(n) + ' 天（可在「设置/备份」里改日期）';
+  }
+  const hint = document.getElementById('examDateHint');
+  if (hint) {
+    hint.textContent = n > 0
+      ? '今天距 ' + examDateStr() + ' 还有 ' + n + ' 天。'
+      : '当前日期是 ' + examDateStr() + '（已经过去或就是今天）。';
+  }
+}
+function saveExamDate() {
+  const v = document.getElementById('setExamDate').value;
+  if (!parseDateStr(v)) { toast('先选一个日期吧。'); return; }
+  state.settings.examDate = v;
+  saveState();
+  renderCountdown();
+  renderSettings();
+  toast('倒计时日期已保存。');
+}
+
+/* =====================================================================
+   8.6 强化阶段（第二轮）：按模块录入 + 按模块随机抽题
+        与第一轮（items，按章节、带艾宾浩斯复习）完全独立
+   ===================================================================== */
+const S2_MODULES = ['简答', '名词解释', '易混淆知识点', '重难点', '创新题'];
+const S2_MODULE_CLASS = { '简答': 'sage', '名词解释': 'sky', '易混淆知识点': 'clay', '重难点': 'warn', '创新题': 'lilac' };
+const S2_RATINGS = ['记得', '模糊', '忘记'];
+let editingS2Id = null;
+const s2quiz = { active: false, queue: [], idx: 0, current: null, revealed: false, stats: { '记得': 0, '模糊': 0, '忘记': 0 }, total: 0 };
+
+function normalizeS2Item(raw) {
+  if (!raw || typeof raw !== 'object') return null;
+  const question = String(raw.question || raw.title || '').trim();
+  const answer = String(raw.answer || '').trim();
+  if (!question && !answer) return null;
+  const history = Array.isArray(raw.history) ? raw.history.slice(-50).map(function (h) {
+    return {
+      at: String((h && (h.at || h.reviewedAt)) || '').slice(0, 10),
+      rating: S2_RATINGS.indexOf(h && h.rating) >= 0 ? h.rating : '记得'
+    };
+  }) : [];
+  const last = history.length ? history[history.length - 1] : null;
+  return {
+    id: raw.id ? String(raw.id) : uid('s2'),
+    module: S2_MODULES.indexOf(raw.module) >= 0 ? raw.module : S2_MODULES[0],
+    subject: String(raw.subject || ''),
+    title: String(raw.title || ''),
+    question: question,
+    answer: answer,
+    importance: ['高', '中', '低'].indexOf(raw.importance) >= 0 ? raw.importance : '中',
+    tags: Array.isArray(raw.tags) ? raw.tags.map(function (t) { return String(t).trim(); }).filter(Boolean) : [],
+    createdAt: raw.createdAt ? String(raw.createdAt) : nowISO(),
+    updatedAt: raw.updatedAt ? String(raw.updatedAt) : (raw.createdAt ? String(raw.createdAt) : nowISO()),
+    lastRating: S2_RATINGS.indexOf(raw.lastRating) >= 0 ? raw.lastRating : (last ? last.rating : null),
+    lastCheckedAt: raw.lastCheckedAt ? String(raw.lastCheckedAt).slice(0, 10) : (last ? last.at : null),
+    history: history
+  };
+}
+function s2Create(o) {
+  const it = normalizeS2Item({
+    id: uid('s2'), module: o.module, subject: o.subject, title: o.title,
+    question: o.question, answer: o.answer, importance: o.importance, tags: o.tags,
+    createdAt: nowISO(), updatedAt: nowISO(), history: []
+  });
+  state.stage2.items.push(it);
+  return it;
+}
+function saveS2Form() {
+  const mod = document.getElementById('s2Module').value;
+  const question = document.getElementById('s2Question').value.trim();
+  const answer = document.getElementById('s2Answer').value.trim();
+  if (!question && !answer) { toast('题目和答案，至少写一个。'); document.getElementById('s2Question').focus(); return; }
+  const payload = {
+    module: mod,
+    subject: document.getElementById('s2Subject').value.trim(),
+    title: document.getElementById('s2Title').value.trim(),
+    question: question,
+    answer: answer,
+    importance: document.getElementById('s2Importance').value,
+    tags: parseTags(document.getElementById('s2Tags').value)
+  };
+  if (editingS2Id) {
+    const it = state.stage2.items.find(function (x) { return x.id === editingS2Id; });
+    if (it) { Object.keys(payload).forEach(function (k) { it[k] = payload[k]; }); it.updatedAt = nowISO(); toast('已更新。'); }
+    exitS2Edit();
+  } else {
+    s2Create(payload);
+    toast('已加入「' + mod + '」模块。');
+  }
+  saveState();
+  clearS2Form();
+  refreshAll();
+}
+function clearS2Form() {
+  ['#s2Question', '#s2Answer', '#s2Title', '#s2Tags'].forEach(function (s) { document.querySelector(s).value = ''; });
+  document.getElementById('s2Hint').textContent = '';
+}
+function enterS2Edit(id) {
+  const it = state.stage2.items.find(function (x) { return x.id === id; });
+  if (!it) return;
+  editingS2Id = id;
+  document.getElementById('s2Module').value = it.module;
+  document.getElementById('s2Subject').value = it.subject;
+  document.getElementById('s2Title').value = it.title;
+  document.getElementById('s2Question').value = it.question;
+  document.getElementById('s2Answer').value = it.answer;
+  document.getElementById('s2Importance').value = it.importance;
+  document.getElementById('s2Tags').value = (it.tags || []).join(', ');
+  document.getElementById('btnS2Save').textContent = '保存修改';
+  document.getElementById('btnS2Cancel').classList.remove('hidden');
+  document.getElementById('s2Hint').textContent = '正在编辑：《' + (it.title || it.question || it.answer.slice(0, 12)) + '》';
+  switchTab('stage2');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function exitS2Edit() {
+  editingS2Id = null;
+  document.getElementById('btnS2Save').textContent = '保存到模块';
+  document.getElementById('btnS2Cancel').classList.add('hidden');
+  document.getElementById('s2Hint').textContent = '';
+}
+async function deleteS2Item(id) {
+  const it = state.stage2.items.find(function (x) { return x.id === id; });
+  if (!it) return;
+  const yes = await confirmDialog('删除这道强化题？', '《' + (it.title || it.question || it.answer.slice(0, 15)) + '》删除后无法恢复，检验记录也会一起删掉。', '删除');
+  if (!yes) return;
+  state.stage2.items = state.stage2.items.filter(function (x) { return x.id !== id; });
+  if (editingS2Id === id) exitS2Edit();
+  saveState();
+  refreshAll();
+  toast('已删除。');
+}
+
+function renderS2Options() {
+  const opts = S2_MODULES.map(function (m) { return '<option value="' + m + '">' + m + '</option>'; }).join('');
+  const keep = {};
+  ['s2Module', 's2FilterModule'].forEach(function (id) {
+    const el = document.getElementById(id);
+    keep[id] = el.value;
+    el.innerHTML = (id === 's2FilterModule' ? '<option value="">全部模块</option>' : '') + opts;
+    if (keep[id]) el.value = keep[id];
+  });
+  const q = document.getElementById('s2QuizModule');
+  const qk = q.value;
+  q.innerHTML = '<option value="">全部模块（混合抽）</option>' + opts;
+  if (qk) q.value = qk;
+  /* 科目下拉：强化题库里出现过的科目 */
+  const subs = [];
+  state.stage2.items.forEach(function (x) { if (x.subject && subs.indexOf(x.subject) === -1) subs.push(x.subject); });
+  subs.sort();
+  const sel = document.getElementById('s2QuizSubject');
+  const sk = sel.value;
+  sel.innerHTML = '<option value="">全部科目</option>' + subs.map(function (s) {
+    return '<option value="' + escapeHtml(s) + '">' + escapeHtml(s) + '</option>';
+  }).join('');
+  sel.value = subs.indexOf(sk) >= 0 ? sk : '';
+}
+function renderS2Stats() {
+  const box = document.getElementById('s2Stats');
+  const items = state.stage2.items;
+  const html = S2_MODULES.map(function (m) {
+    const n = items.filter(function (x) { return x.module === m; }).length;
+    return '<div class="mini"><b>' + n + '</b><span>' + m + '</span></div>';
+  });
+  html.push('<div class="mini"><b>' + items.length + '</b><span>总计</span></div>');
+  box.innerHTML = html.join('');
+}
+function renderS2Card(it) {
+  const meta = [];
+  meta.push('<span class="tag ' + (S2_MODULE_CLASS[it.module] || '') + '">' + it.module + '</span>');
+  if (it.subject) meta.push('<span class="tag">' + escapeHtml(it.subject) + '</span>');
+  if (it.importance === '高') meta.push('<span class="tag clay">重要</span>');
+  (it.tags || []).forEach(function (t) { meta.push('<span class="tag">#' + escapeHtml(t) + '</span>'); });
+  meta.push(it.lastRating
+    ? '<span class="tag sky">上次 ' + escapeHtml(it.lastRating) + (it.lastCheckedAt ? ' · ' + escapeHtml(it.lastCheckedAt) : '') + '</span>'
+    : '<span class="tag">还没检验过</span>');
+  meta.push('<span class="muted small">检验 ' + (it.history ? it.history.length : 0) + ' 次</span>');
+  const hist = (it.history || []).slice(-6).reverse();
+  return '<div class="s2-item m-' + (S2_MODULE_CLASS[it.module] || 'none') + '">'
+    + '<div class="s2-q">' + escapeHtml(it.title || it.question || it.answer.slice(0, 20)) + '</div>'
+    + (it.title && it.question ? '<div class="small soft" style="margin-top:4px">' + escapeHtml(it.question) + '</div>' : '')
+    + '<div class="item-meta">' + meta.join('') + '</div>'
+    + (it.answer ? '<details style="margin-top:7px"><summary class="small muted" style="cursor:pointer">看答案' + (hist.length ? '与检验记录' : '') + '</summary>'
+      + '<div class="s2-a">' + escapeHtml(it.answer) + '</div>'
+      + (hist.length ? '<div class="small muted" style="margin-top:7px">' + hist.map(function (h) {
+        return escapeHtml(h.at + ' · ' + h.rating);
+      }).join('<br>') + '</div>' : '')
+      + '</details>' : '')
+    + '<div class="item-actions">'
+    + '<button class="btn tiny ghost" data-s2edit="' + it.id + '">编辑</button>'
+    + '<button class="btn tiny sage-soft" data-s2quizone="' + it.id + '">抽这条</button>'
+    + '<button class="btn tiny danger" data-s2del="' + it.id + '">删除</button>'
+    + '</div></div>';
+}
+function renderS2List() {
+  const q = (document.getElementById('s2Search').value || '').trim().toLowerCase();
+  const mod = document.getElementById('s2FilterModule').value;
+  let list = state.stage2.items.slice();
+  if (mod) list = list.filter(function (x) { return x.module === mod; });
+  if (q) {
+    list = list.filter(function (x) {
+      return (x.question + ' ' + x.answer + ' ' + x.title + ' ' + x.subject + ' ' + (x.tags || []).join(' ')).toLowerCase().indexOf(q) !== -1;
+    });
+  }
+  document.getElementById('s2ListCount').textContent = '共 ' + list.length + ' 条';
+  const box = document.getElementById('s2List');
+  if (!list.length) {
+    box.innerHTML = '<div class="card empty">' + (state.stage2.items.length ? '这个筛选下没有题目。' : '还没有强化题目。上面录一条，就能按模块抽题检验了。') + '</div>';
+    return;
+  }
+  const html = [];
+  S2_MODULES.forEach(function (m) {
+    const arr = list.filter(function (x) { return x.module === m; });
+    if (!arr.length) return;
+    arr.sort(function (a, b) { return (b.createdAt || '') < (a.createdAt || '') ? -1 : 1; });
+    html.push('<div class="subject-head"><span class="dot"></span><span class="name">' + m + '</span><span class="count">' + arr.length + ' 条</span></div>');
+    arr.forEach(function (it) { html.push(renderS2Card(it)); });
+  });
+  box.innerHTML = html.join('');
+  box.querySelectorAll('[data-s2edit]').forEach(function (b) {
+    b.addEventListener('click', function () { enterS2Edit(b.dataset.s2edit); });
+  });
+  box.querySelectorAll('[data-s2del]').forEach(function (b) {
+    b.addEventListener('click', function () { deleteS2Item(b.dataset.s2del); });
+  });
+  box.querySelectorAll('[data-s2quizone]').forEach(function (b) {
+    b.addEventListener('click', function () { s2Start(true, b.dataset.s2quizone); });
+  });
+}
+function renderStage2() {
+  renderS2Options();
+  renderS2Stats();
+  renderS2List();
+}
+
+/* ---------- 按模块随机抽题 ---------- */
+function s2Pool(one, onlyId) {
+  let pool = state.stage2.items.slice();
+  if (onlyId) return pool.filter(function (x) { return x.id === onlyId; });
+  const mod = document.getElementById('s2QuizModule').value;
+  const sub = document.getElementById('s2QuizSubject').value;
+  const range = document.getElementById('s2QuizRange').value;
+  if (mod) pool = pool.filter(function (x) { return x.module === mod; });
+  if (sub) pool = pool.filter(function (x) { return x.subject === sub; });
+  if (range === 'new') pool = pool.filter(function (x) { return !x.lastRating; });
+  else if (range === 'weak') pool = pool.filter(function (x) { return x.lastRating === '模糊' || x.lastRating === '忘记'; });
+  pool = shuffle(pool);
+  return one ? pool.slice(0, 1) : pool;
+}
+function s2Start(one, onlyId) {
+  const pool = s2Pool(one, onlyId);
+  const hint = document.getElementById('s2QuizHint');
+  if (!pool.length) {
+    hint.textContent = state.stage2.items.length
+      ? '这个范围里没有题目：换一个模块、或把「抽题范围」改成「全部题目」试试。'
+      : '还没有强化题目，先在上面录一条。';
+    toast('这个范围里没有题目。');
+    return;
+  }
+  s2quiz.active = true;
+  s2quiz.queue = pool;
+  s2quiz.idx = 0;
+  s2quiz.total = pool.length;
+  s2quiz.stats = { '记得': 0, '模糊': 0, '忘记': 0 };
+  document.getElementById('s2QuizSetup').classList.add('hidden');
+  document.getElementById('s2QuizResult').classList.add('hidden');
+  document.getElementById('s2QuizCard').classList.remove('hidden');
+  hint.textContent = '';
+  s2ShowCurrent();
+}
+function s2ShowCurrent() {
+  const it = s2quiz.queue[s2quiz.idx];
+  if (!it) { s2End(); return; }
+  s2quiz.current = it;
+  s2quiz.revealed = false;
+  document.getElementById('s2QuizProgress').textContent = '第 ' + (s2quiz.idx + 1) + ' / ' + s2quiz.total + ' 条'
+    + (document.getElementById('s2QuizModule').value ? '' : '（混合）');
+  const meta = ['<span class="tag ' + (S2_MODULE_CLASS[it.module] || '') + '">' + it.module + '</span>'];
+  if (it.subject) meta.push('<span class="tag">' + escapeHtml(it.subject) + '</span>');
+  if (it.importance === '高') meta.push('<span class="tag clay">重要</span>');
+  if (it.lastRating) meta.push('<span class="tag sky">上次 ' + escapeHtml(it.lastRating) + '</span>');
+  document.getElementById('s2QuizMeta').innerHTML = meta.join('');
+  document.getElementById('s2QuizQuestion').textContent = it.question || it.title || '（这条只有答案，先回忆一下要点）';
+  document.getElementById('s2QuizAnswer').textContent = it.answer || '（这条没有填写答案）';
+  document.getElementById('s2QuizAnswerBox').classList.add('hidden');
+  document.getElementById('s2QuizRateBar').classList.add('hidden');
+  document.getElementById('btnS2ShowAnswer').classList.remove('hidden');
+  document.getElementById('btnS2Skip').classList.remove('hidden');
+  document.getElementById('btnS2EditCurrent').classList.remove('hidden');
+}
+function s2Reveal() {
+  if (!s2quiz.current) return;
+  s2quiz.revealed = true;
+  document.getElementById('s2QuizAnswerBox').classList.remove('hidden');
+  document.getElementById('btnS2ShowAnswer').classList.add('hidden');
+  document.getElementById('s2QuizRateBar').classList.remove('hidden');
+}
+function s2Rate(rating) {
+  const it = s2quiz.current;
+  if (!it || S2_RATINGS.indexOf(rating) === -1) return;
+  it.history = it.history || [];
+  it.history.push({ at: todayStr(), rating: rating });
+  it.lastRating = rating;
+  it.lastCheckedAt = todayStr();
+  it.updatedAt = nowISO();
+  s2quiz.stats[rating] = (s2quiz.stats[rating] || 0) + 1;
+  saveState();
+  s2quiz.idx++;
+  if (s2quiz.idx >= s2quiz.queue.length) { s2End(); return; }
+  s2ShowCurrent();
+}
+function s2End() {
+  s2quiz.active = false;
+  document.getElementById('s2QuizCard').classList.add('hidden');
+  document.getElementById('s2QuizSetup').classList.remove('hidden');
+  const answered = s2quiz.stats['记得'] + s2quiz.stats['模糊'] + s2quiz.stats['忘记'];
+  const box = document.getElementById('s2QuizResult');
+  box.classList.remove('hidden');
+  if (!answered) {
+    document.getElementById('s2QuizResultText').textContent = '这一轮还没自评就结束了。想继续的时候，随时可以再抽一轮。';
+  } else {
+    document.getElementById('s2QuizResultText').innerHTML = '本轮抽题 <b>' + answered + '</b> 条，记得 <b>' + s2quiz.stats['记得']
+      + '</b>，模糊 <b>' + s2quiz.stats['模糊'] + '</b>，忘记 <b>' + s2quiz.stats['忘记'] + '</b>。<br>'
+      + (s2quiz.stats['忘记'] ? '忘记的那几条，可以改成「只抽上次答得不好的」再来一遍。' : '状态不错，保持这个节奏。');
+  }
+  refreshAll();
+}
+
 /* =====================================================================
    9. 设置 / 备份（导出与导入都要带上 memos 和 chat）
    ===================================================================== */
@@ -2654,11 +3182,13 @@ function renderSetStats() {
   $('#setStatReviews').textContent = state.items.reduce(function (n, i) { return n + (i.history ? i.history.length : 0); }, 0);
   $('#setStatMemos').textContent = state.memos.length;
   $('#setStatChats').textContent = state.chat.messages.length;
+  $('#setStatS2').textContent = state.stage2.items.length;
 }
 function renderSettings() {
   $('#setIntervals').value = intervals().join(', ');
   $('#setMasteredDays').value = state.settings.masteredDays || DEFAULT_MASTERED_DAYS;
   $('#setWeatherEnabled').checked = state.settings.weatherEnabled !== false;
+  $('#setExamDate').value = examDateStr();
   renderChatSettings();
   renderSetStats();
 }
@@ -2706,6 +3236,8 @@ function validateBackup(raw) {
   if (raw.chat !== undefined && (typeof raw.chat !== 'object' || Array.isArray(raw.chat))) errs.push('chat 不是对象');
   if (raw.chat && raw.chat.messages !== undefined && !Array.isArray(raw.chat.messages)) errs.push('chat.messages 不是数组');
   if (raw.daily !== undefined && (typeof raw.daily !== 'object' || Array.isArray(raw.daily))) errs.push('daily 不是对象');
+  if (raw.stage2 !== undefined && (typeof raw.stage2 !== 'object' || Array.isArray(raw.stage2))) errs.push('stage2 不是对象');
+  if (raw.stage2 && raw.stage2.items !== undefined && !Array.isArray(raw.stage2.items)) errs.push('stage2.items 不是数组');
   return errs;
 }
 async function importData(raw) {
@@ -2726,10 +3258,12 @@ async function importData(raw) {
   if (!yes) return;
   /* 老备份里没有 memos / chat 时，保留你现有的备忘和聊天，避免误删 */
   const keepMemos = Array.isArray(raw.memos) ? null : (state.memos || []);
+  const keepS2 = (raw.stage2 && Array.isArray(raw.stage2.items)) ? null : ((state.stage2 && state.stage2.items) || []);
   const keepChat = (raw.chat && Array.isArray(raw.chat.messages)) ? null : state.chat;
   const keepChatSettings = (raw.chat && raw.chat.settings) ? null : state.chat.settings;
   state = normalizeData(raw);
   if (keepMemos) state.memos = keepMemos;
+  if (keepS2) state.stage2.items = keepS2;
   if (keepChat) state.chat.messages = keepChat.messages;
   if (keepChatSettings && !state.chat.settings.apiKey) state.chat.settings = keepChatSettings;
   ensureTodayDaily();
@@ -2767,10 +3301,12 @@ function updateTopStats() {
 function refreshAll() {
   ensureTodayDaily();
   updateTopStats();
+  renderCountdown();
   renderSubjectOptions();
   renderHome();
   renderReview();
   renderAll();
+  renderStage2();
   renderMemos();
   renderQuote();
   renderMicro();
@@ -2900,6 +3436,37 @@ function bindEvents() {
     b.addEventListener('click', function () { sendChat(b.dataset.quick); });
   });
   $('#btnChatClear').addEventListener('click', clearChat);
+
+  /* 强化阶段 */
+  $('#btnS2Save').addEventListener('click', saveS2Form);
+  $('#btnS2Cancel').addEventListener('click', function () { exitS2Edit(); clearS2Form(); toast('已取消编辑。'); });
+  $('#s2Search').addEventListener('input', renderS2List);
+  $('#s2FilterModule').addEventListener('change', renderS2List);
+  $('#s2Question').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); saveS2Form(); }
+  });
+  $('#btnS2QuizStart').addEventListener('click', function () { s2Start(false); });
+  $('#btnS2QuizOne').addEventListener('click', function () { s2Start(true); });
+  $('#btnS2ShowAnswer').addEventListener('click', s2Reveal);
+  $('#btnS2Skip').addEventListener('click', function () {
+    s2quiz.idx++;
+    if (s2quiz.idx >= s2quiz.queue.length) s2End(); else s2ShowCurrent();
+  });
+  $('#btnS2QuizEnd').addEventListener('click', s2End);
+  $('#btnS2QuizAgain').addEventListener('click', function () { s2Start(false); });
+  $('#btnS2EditCurrent').addEventListener('click', function () {
+    if (s2quiz.current) enterS2Edit(s2quiz.current.id);
+  });
+  $$('#s2QuizRateBar [data-s2rate]').forEach(function (b) {
+    b.addEventListener('click', function () { s2Rate(b.dataset.s2rate); });
+  });
+
+  /* 倒计时 */
+  $('#btnSaveExamDate').addEventListener('click', saveExamDate);
+  $('#btnResetExamDate').addEventListener('click', function () {
+    $('#setExamDate').value = DEFAULT_EXAM_DATE;
+    saveExamDate();
+  });
 
   /* 设置 */
   $('#btnSaveIntervals').addEventListener('click', saveIntervals);
